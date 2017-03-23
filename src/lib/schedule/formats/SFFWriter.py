@@ -27,20 +27,21 @@ class SFFWriter(ScheduleWriter):
             fgr, fgg, fgb = fg 
             self.file.write(bytes([bgr, bgg, bgb, fgr, fgg, fgb]))
             self.file.write(bytes([len(p.getName())]))
-            self.file.write(p.getName())
+            self.file.write(p.getName().encode("UTF-8"))
+            self.file.write(bytes([len(p.getSubprojects())]))
             for sp in p.getSubprojects():
                 self.file.write(bytes([len(sp.getName())]))
-                self.file.write(sp.getName())
-        self.write(bytes([len(entries)]))
+                self.file.write(sp.getName().encode("UTF-8"))
+        self.file.write(bytes([len(entries)]))
         for e in entries:
             pid, sid = (0,0)
             for i in range(len(projects)):
                 if projects[i].getName() == e.getProject().getName():
                     pid = i
                     for j in range(len(projects[i].getSubprojects())):
-                        if e.getSubprojects().getName() == projects[i].getSubprojects()[j].getName():
+                        if e.getSubproject().getName() == projects[i].getSubprojects()[j].getName():
                             sid = j
-            self.file.write(bytes([pid, sid, (e.getDay() << 5) + e.gettart(), e.getDuration()]))
+            self.file.write(bytes([pid, sid, (e.getDay() << 5) + e.getStart(), e.getDuration()]))
     
     def close(self):
         self.file.close()

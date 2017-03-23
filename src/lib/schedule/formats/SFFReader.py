@@ -14,13 +14,13 @@ class SFFReader(ScheduleReader):
     """
     
     def open(self, **kw):
-        self.file = open(kw.get("filename", "schedule.sff", "rb"))
+        self.file = open(kw.get("filename", "schedule.sff"), "rb")
         self.projects = [] 
         self.entries = []
         d = self.file.read(1)
         m = self.file.read(1)
         y = self.file.read(4)
-        self.date = date(int.from_bytes(y, "big"), int.from_bytes(m, "big"), int.from_bytes(d), "big")
+        self.date = date(int.from_bytes(y, "big"), int.from_bytes(m, "big"), int.from_bytes(d, "big"))
         l = int.from_bytes(self.file.read(1), "big")
         for i in range(l):
             bg_r = int.from_bytes(self.file.read(1), "big")
@@ -31,15 +31,15 @@ class SFFReader(ScheduleReader):
             fg_g = int.from_bytes(self.file.read(1), "big")
             fg_b = int.from_bytes(self.file.read(1), "big")
             l1 = int.from_bytes(self.file.read(1), "big")
-            name = self.file.read(l1)
-            project = ScheduleProject(name (bg_r, bg_g, bg_b), (fg_r, fg_g, fg_b))
+            name = self.file.read(l1).decode("UTF-8")
+            project = ScheduleProject(name, (bg_r, bg_g, bg_b), (fg_r, fg_g, fg_b))
             l2 = int.from_bytes(self.file.read(1), "big")
             for j in range(l2):
                 spnl = int.from_bytes(self.file.read(1), "big")
-                name = selffile.read(spnl)
+                name = self.file.read(spnl).decode("UTF-8")
                 subproject = ScheduleSubproject(name)
                 project.addSubproject(subproject)
-            self.projects.appens(project)
+            self.projects.append(project)
         l = int.from_bytes(self.file.read(1), "big")
         for i in range(l):
             project_id = int.from_bytes(self.file.read(1), "big")
@@ -48,7 +48,7 @@ class SFFReader(ScheduleReader):
             day = daystart >> 5 
             start = daystart & 0x1f
             duration = int.from_bytes(self.file.read(1), "big")
-            self.entries.append(ScheduleEntry(self.projects[project_id], self.projects[project_id].getSubprojects()[subproject_id]), day, start, duration)
+            self.entries.append(ScheduleEntry(self.projects[project_id], self.projects[project_id].getSubprojects()[subproject_id], day, start, duration))
 
     def readProjects(self):
         """
