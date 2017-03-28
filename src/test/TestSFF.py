@@ -40,3 +40,8 @@ class TestSFF(unittest.TestCase):
 
         for i in range(len(projects)):
             self.assertEqual(projects[i].getName(), self.projects[i].getName())
+            for j in range(len(projects[i].getSubprojects())):
+                self.assertEqual(projects[i].getSubprojects()[j].getName(), self.projects[i].getSubprojects()[j].getName())
+        for i in range(len(entries)):
+            self.assertEqual(entries[i].getProject().getName(), self.entries[i].getProject().getName())
+            self.assertEqual(entries[i].getDay(), self.entries[i].getDay())
