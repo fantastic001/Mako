@@ -50,7 +50,6 @@ class AMS(object):
         fname = "%s/%s/%s/progress.csv" % (self.dbpath, project.getName(), subproject.getName())
         f = open(fname, "r")
         for line in f:
-            print(line)
             lines.append(line)
         f.close()
         if today == lines[-1].split(",")[0]: 

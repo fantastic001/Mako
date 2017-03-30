@@ -3,6 +3,11 @@
 		{
 			"action": "filesystem.directory.size",
 			"path": "/data/Documents/Notes/"
+		},
+		{
+			"action": "org.sections.count",
+			"path": "test_data/db/Notes/Size/sections.org"
 		}
+
 	]
 }

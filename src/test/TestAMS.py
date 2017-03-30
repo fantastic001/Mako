@@ -10,5 +10,5 @@ class TestAMS(unittest.TestCase):
         project = ScheduleProject("Notes", (0,0,0), (0,0,0,))
         subproject = ScheduleSubproject("Size")
         m = ams.measure(project, subproject)
-        self.assertEqual(len(m), 1)
+        self.assertEqual(len(m), 2)
         ams.append(project, subproject, m)
