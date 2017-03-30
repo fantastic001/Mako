@@ -7,6 +7,10 @@
 		{
 			"action": "org.sections.count",
 			"path": "test_data/db/Notes/Size/sections.org"
+		},
+		{
+			"action": "org.sections.done.count",
+			"path": "test_data/db/Notes/Size/todo.org"
 		}
 
 	]
