@@ -1,7 +1,7 @@
 
 class AMSBaseAction:
     
-    name = ""
+    name = "base"
 
     def __init__(self, cfg):
         self.cfg = cfg 
