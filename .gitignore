@@ -5,3 +5,4 @@ src/lib/schedule/formats/__pycache__/
 src/test/__pycache__/
 src/lib/ams/__pycache__/
 src/lib/ams/actions/__pycache__/
+test_data/db/Notes/Size/progress.csv
