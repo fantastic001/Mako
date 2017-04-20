@@ -5,3 +5,7 @@ from .TestSFF import *
 from .TestAMSDirectorySizeAction import * 
 from .TestAMS import * 
 from .TestAMSScriptAction import * 
+from .TestReport import * 
+from .TestReportGenerator import * 
+from .TestReportView import * 
+from .TestQuarterReportGenerator import * 

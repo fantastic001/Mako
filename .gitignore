@@ -2,6 +2,10 @@ test.sff
 src/__pycache__/
 src/lib/schedule/__pycache__/
 src/lib/schedule/formats/__pycache__/
+src/lib/reporting/__pycache__/
+src/lib/reporting/org/__pycache__/
+src/lib/reporting/quarter/__pycache__/
+src/lib/reporting/month/__pycache__/
 src/test/__pycache__/
 src/lib/ams/__pycache__/
 src/lib/ams/actions/__pycache__/
