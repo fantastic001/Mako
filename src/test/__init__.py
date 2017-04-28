@@ -9,3 +9,4 @@ from .TestReport import *
 from .TestReportGenerator import * 
 from .TestReportView import * 
 from .TestQuarterReportGenerator import * 
+from .TestMonthReportGenerator import * 
