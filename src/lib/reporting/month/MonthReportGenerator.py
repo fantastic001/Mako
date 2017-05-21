@@ -2,6 +2,7 @@
 from .. import Report 
 from .. import ReportGenerator 
 
+import datetime
 
 class MonthReportGenerator(ReportGenerator):
     """
@@ -38,7 +39,7 @@ class MonthReportGenerator(ReportGenerator):
         projects = self.getProjects()
         total = 0
         split = []
-        report = Report()
+        report = Report("Monthly report for %s" % str(datetime.date.today()), datetime.date.today())
         for project in projects:
             for subproject in project.getSubprojects():
                 for task in subproject.getAllTasks():

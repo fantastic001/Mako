@@ -2,6 +2,8 @@
 from .. import ReportGenerator
 from .. import Report
 
+import datetime
+
 class QuarterReportGenerator(ReportGenerator):
     """
     This generator generates report based on quarter statistics. 
@@ -37,7 +39,7 @@ class QuarterReportGenerator(ReportGenerator):
 
     def generate(self):
         projects = self.getProjects()
-        report = Report()
+        report = Report("Quarter report for %s" % str(datetime.date.today()), datetime.date.today())
         report.setField("projects", [])
         report.setField("subprojects", {})
         for project in projects:

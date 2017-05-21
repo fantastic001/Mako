@@ -4,9 +4,12 @@ import unittest
 from ..lib.reporting import ReportGenerator
 from ..lib.reporting import Report
 
+
+import datetime 
+
 class DummyReportGenerator(ReportGenerator):
     def generate(self):
-        r = Report()
+        r = Report("test", datetime.date.today())
         r.setField("a", 1)
         return r
 

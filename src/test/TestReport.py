@@ -3,10 +3,12 @@ import unittest
 
 from ..lib.reporting import Report
 
+import datetime
+
 class TestReport(unittest.TestCase):
     
     def test_basic(self):
-        report = Report()
+        report = Report("Test", datetime.date.today())
         report.setField("a", 1)
         report.setField("b", 0.75)
         report.setField("c", "c")

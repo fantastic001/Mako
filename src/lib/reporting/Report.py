@@ -1,8 +1,16 @@
 
 class Report(object):
     
-    def __init__(self):
+    def __init__(self, name, date):
         self.fields = {}
+        self.name = name 
+        self.date = date
+
+    def getName(self):
+        return self.name 
+
+    def getDate(self):
+        return self.date
 
     def setField(self, name, value):
         """
