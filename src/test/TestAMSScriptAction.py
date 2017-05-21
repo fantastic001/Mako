@@ -7,14 +7,14 @@ import os
 class TestAMSScriptAction(unittest.TestCase):
     
     def test_stdout(self):
-        a = AMSScriptAction("Script action", {
+        a = AMSScriptAction("s","Script action", {
             "path": "./test_data/scripts/test.sh",
             "interpreter": "sh"
         })
         self.assertEqual(a.measure(), 5.0)
     
     def test_stdout_with_args(self):
-        a = AMSScriptAction("script action", {
+        a = AMSScriptAction("s","script action", {
             "path": "./test_data/scripts/test2.sh",
             "interpreter": "sh",
             "args": "5",
@@ -22,7 +22,7 @@ class TestAMSScriptAction(unittest.TestCase):
         self.assertEqual(a.measure(), 5.0)
     
     def test_file_with_args(self):
-        a = AMSScriptAction("script action", {
+        a = AMSScriptAction("s", "script action", {
             "path": "./test_data/scripts/test3.sh",
             "interpreter": "sh",
             "args": "/tmp/myfile",

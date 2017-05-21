@@ -1,14 +1,17 @@
 {
 	"measurings":[
 		{
+			"id": "directory_size",
 			"action": "filesystem.directory.size",
 			"path": "/data/Documents/Notes/"
 		},
 		{
+			"id": "section.count",
 			"action": "org.sections.count",
 			"path": "test_data/db/Notes/Size/sections.org"
 		},
 		{
+			"id": "done.count",
 			"action": "org.sections.done.count",
 			"path": "test_data/db/Notes/Size/todo.org"
 		}
