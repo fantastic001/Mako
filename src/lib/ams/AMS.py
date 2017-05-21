@@ -27,7 +27,7 @@ class AMS(object):
         for measurement in ms:
             for action in self.ACTIONS:
                 if measurement["action"] == action.name:
-                    action_obj = action(measurement)
+                    action_obj = action(measurement.get("description", ""), measurement)
                     res.append(action_obj.measure())
                     break
         return res
