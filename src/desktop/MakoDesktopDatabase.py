@@ -70,17 +70,26 @@ class MakoDesktopDatabase(MakoDatabase):
             "november": 11,
             "december": 12
         }
-        return date(int(title.split(" ")[1]), months[title.split(" ")[0].lower()], 28)
+        elems = title.split(" ")
+        if len(elems) >= 2:
+            year = int(elems[1])
+            month = months.get(elems[0], 1)
+        return date(year, month, 28)
 
 
     def parseTask(self, element, last):
         title = element.getTitle()
+        print("Parsing task titled with: " + title)
         elems = title.split(" - ")
         desc = elems[0]
-        expected = int(elems[1][:-1])
+        expected = 0
         spent = 0
-        if len(elems) == 3:
-            spent = int(elems[2][:-1])
+        if len(elems) > 1:
+            if len(elems) >= 3:
+                expected = int(elems[-2][:-1])
+                spent = int(elems[-1][:-1])
+            else:
+                expected = int(elems[-1][:-1])
         return Task(desc, expected, spent, element.isDONE(), last)
 
     def readSubprojects(self, path):
@@ -99,7 +108,7 @@ class MakoDesktopDatabase(MakoDatabase):
                 start = 0
                 for i in range(len(elements)):
                     if elements[i].getType() == ORGElement.ELEMENT_TYPE_SECTION:
-                        if elements[i].getLevel() == 1 and elements[i].getTitle() in ["Specific", "specific"]:
+                        if elements[i].getLevel() == 1 and elements[i].getTitle().lower() in ["time boxed", "time-boxed"]:
                             print("Found task list for " + name)
                             start = i 
                             break
