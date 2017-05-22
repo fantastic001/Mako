@@ -135,7 +135,19 @@ class MakoDesktopDatabase(MakoDatabase):
         return res
 
     def downloadMeasurementActions(self):
-        pass
+        res = []
+        path = "%s/Measurements/" % self.path
+        for name in os.listdir(path):
+            fpath = "%s/%s/measure.json" % (path, name)
+            if os.path.isfile(fpath):
+                ams = AMS()
+                f = open(fpath)
+                action = ams.getAction(json.loads(f.read()))
+                f.close()
+                res.append(action)
+        return res
+
+
 
     def downloadMeasurementData(self, action_id):
         """
@@ -144,7 +156,28 @@ class MakoDesktopDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
-        pass
+        res = []
+        path = "%s/Measurements/" % self.path
+        for name in os.listdir(path):
+            fpath = "%s/%s/data.csv" % (path, name)
+            apath =  "%s/%s/measure.json" % (path, name)
+            ams = AMS()
+            f = open(apath)
+            action = ams.getAction(json.loads(f.read()))
+            f.close()
+            if os.path.isfile(fpath) and action.getIdentifier() == action_id:
+                f = open(fpath)
+                header = True
+                for line in f:
+                    if header:
+                        header = False 
+                        continue
+                    else:
+                        date_str = line.split(",")[0]
+                        val = float(line.split(",")[1])
+                        d = datetime.datetime.strptime(date_str, "%d.%m.%Y.")
+                        res.append((d, val))
+        return res
 
     def downloadData(self):
         """
