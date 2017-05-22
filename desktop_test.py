@@ -1,6 +1,13 @@
 
 from src.desktop import * 
 
+import colorama
+
+def short_title(task):
+    if len(task.getText()) > 30:
+        return task.getText()[:30] + "..."
+    return task.getText()
+
 db = MakoDesktopDatabase("/home/stefan/db/")
 
 projects = db.downloadProjects()
@@ -10,4 +17,8 @@ for p in projects:
     for sp in p.getSubprojects():
         print("\tSubproject: " + sp.getName())
         for t in sp.getAllTasks():
-            print("\t\t| %s \t\t %d \t %d" % (t.getText(), t.getExpectedTime(), t.getSpentTime()))
+            text = short_title(t)
+            color = colorama.Fore.RED
+            if t.isDone():
+                color = colorama.Fore.GREEN
+            print("%s\t\t| %s %s %d \t %d%s" % (color, text, " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))

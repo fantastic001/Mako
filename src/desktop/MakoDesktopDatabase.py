@@ -79,7 +79,6 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def parseTask(self, element, last):
         title = element.getTitle()
-        print("Parsing task titled with: " + title)
         elems = title.split(" - ")
         desc = elems[0]
         expected = 0
@@ -100,7 +99,6 @@ class MakoDesktopDatabase(MakoDatabase):
             for fn in ["notes.org", "plan.org"]:
                 if os.path.isfile("%s/%s" % (spath, fn)):
                     spath = "%s/%s" % (spath, fn)
-                    print("Found: " + spath)
                     subproject = ScheduleSubproject(name)
             if subproject != None:
                 doc = ORGFile(spath).getDocument()
@@ -109,7 +107,6 @@ class MakoDesktopDatabase(MakoDatabase):
                 for i in range(len(elements)):
                     if elements[i].getType() == ORGElement.ELEMENT_TYPE_SECTION:
                         if elements[i].getLevel() == 1 and elements[i].getTitle().lower() in ["time boxed", "time-boxed"]:
-                            print("Found task list for " + name)
                             start = i 
                             break
                 if start > 0:
