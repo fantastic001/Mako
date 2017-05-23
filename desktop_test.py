@@ -24,10 +24,17 @@ for p in projects:
             print("%s\t\t| %s %s %d \t %d%s" % (color, text, " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
 
 
-print("_______________________________________")
+print("_" * 50)
 print("Metrics:")
 metrics = db.downloadMeasurementActions()
 for metric in metrics:
     print("%s\t%s" % (metric.getIdentifier(), metric.getDescription()))
     last = db.downloadMeasurementData(metric.getIdentifier())[-1]
     print("\tLast: %f on %s" % (last[1], str(last[0])))
+
+print("_" * 50)
+print("Schedules:")
+schedules = db.downloadSchedules()
+for schedule in schedules:
+    d, p, e = schedule
+    print("Schedule created %s" % str(d))

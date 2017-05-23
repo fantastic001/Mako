@@ -23,6 +23,13 @@ class MakoDatabase(object):
         pass
 
     def uploadSchedules(self, schedules):
+        """
+        schedules: list of tuples where:
+
+        1. element: date of creation (or None if db does not provide it)
+        2. element: list of all projects 
+        3. element: list of schedule entries
+        """
         pass
 
     def uploadReports(self, reports):
@@ -51,6 +58,13 @@ class MakoDatabase(object):
         pass
 
     def downloadSchedules(self):
+        """
+        Returns list of tuples where:
+
+        1. element: date of creation (or None if db does not provide it)
+        2. element: list of all projects 
+        3. element: list of schedule entries
+        """
         pass
 
     def downloadReports(self):

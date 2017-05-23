@@ -3,6 +3,7 @@ from ..lib.database import MakoDatabase
 from ..lib.schedule import * 
 from ..lib.reporting import * 
 from ..lib.ams import * 
+from ..lib.schedule.formats import * 
 
 import os 
 import os.path
@@ -183,3 +184,23 @@ class MakoDesktopDatabase(MakoDatabase):
         """
         Returns list of tuples where first element is name and second is data 
         """
+        pass
+
+
+    def downloadSchedules(self):
+        res = [] 
+        path = "%s/Schedules/" % self.path 
+        sff_list = os.listdir(path)
+        for name in sff_list:
+            if os.path.isfile("%s/%s"% (path, name)) and name[-4:] == ".sff":
+                reader = SFFReader()
+                reader.open(filename="%s/%s" % (path, name))
+                reader.read()
+                reader.close()
+                res.append((reader.getDate(), reader.readProjects(), reader.readEntries()))
+        return res
+
+
+
+    def downloadReports(self):
+        pass
