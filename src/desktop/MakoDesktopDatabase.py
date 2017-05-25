@@ -203,4 +203,14 @@ class MakoDesktopDatabase(MakoDatabase):
 
 
     def downloadReports(self):
-        pass
+        res = []
+        path = "%s/Reports/" % self.path 
+        for name in os.listdir(path):
+            if name[-5:] == ".json":
+                f = open("%s/%s" % (path, name))
+                json_data = f.read()
+                r = Report("Blank", None)
+                r.fromJSON(json_data)
+                res.append(r)
+                f.close()
+        return res

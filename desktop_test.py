@@ -38,3 +38,8 @@ schedules = db.downloadSchedules()
 for schedule in schedules:
     d, p, e = schedule
     print("Schedule created %s" % str(d))
+
+print("_" * 50)
+print("Reports")
+for r in db.downloadReports():
+    print(r.getName() + " created " + str(r.getDate()))
