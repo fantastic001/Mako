@@ -29,8 +29,9 @@ print("Metrics:")
 metrics = db.downloadMeasurementActions()
 for metric in metrics:
     print("%s\t%s" % (metric.getIdentifier(), metric.getDescription()))
-    last = db.downloadMeasurementData(metric.getIdentifier())[-1]
-    print("\tLast: %f on %s" % (last[1], str(last[0])))
+    data = db.downloadMeasurementData(metric.getIdentifier())
+    print("\tLast: %f on %s" % (data[-1][1], str(data[-1][0])))
+    db.uploadMeasurementData(metric.getIdentifier(), data)
 
 print("_" * 50)
 print("Schedules:")

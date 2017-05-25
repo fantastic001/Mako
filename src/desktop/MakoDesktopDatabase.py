@@ -32,7 +32,19 @@ class MakoDesktopDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
-        pass
+        path = "%s/Measurements/" % self.path
+        for name in os.listdir(path):
+            fpath = "%s/%s/data.csv" % (path, name)
+            apath =  "%s/%s/measure.json" % (path, name)
+            ams = AMS()
+            f = open(apath)
+            action = ams.getAction(json.loads(f.read()))
+            f.close()
+            if action.getIdentifier() == action_id:
+                f = open(fpath, "w")
+                for line in data:
+                    f.write(datetime.datetime.strftime(line[0], "%d.%m.%Y.") + "," + str(line[1]) + "\n")
+                f.close()
 
     def uploadData(self, data):
         """
