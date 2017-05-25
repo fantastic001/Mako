@@ -22,8 +22,33 @@ class MakoDesktopDatabase(MakoDatabase):
     def uploadProjects(self, projects):
         pass
 
+    def writeActionToJSON(self, action, fpath):
+        f = open(fpath, "w")
+        data = action.getConfig()
+        data["id"] = action.getIdentifier()
+        data["action"] = action.name
+        data["description"] = action.getDescription()
+        f.write(json.dumps(data, indent=4))
+        f.close()
+
     def uploadMeasurementActions(self, actions):
-        pass
+        path = "%s/Measurements/" % self.path
+        for action in actions:
+            in_db = False 
+            for name in os.listdir(path):
+                fpath = "%s/%s/measure.json" % (path, name)
+                if os.path.isfile(fpath):
+                    ams = AMS()
+                    f = open(fpath)
+                    current = ams.getAction(json.loads(f.read()))
+                    f.close()
+                    if current.getIdentifier() == action.getIdentifier():
+                        in_db = True
+                        self.writeActionToJSON(action, fpath)
+            if not in_db:
+                # if action is not in db, we first create it 
+                os.mkdir("%s/%s/" % (path, action.getIdentifier()))
+                self.writeActionToJSON(action, "%s/%s/measure.json")
 
     def uploadMeasurementData(self, action_id, data):
         """

@@ -27,6 +27,7 @@ for p in projects:
 print("_" * 50)
 print("Metrics:")
 metrics = db.downloadMeasurementActions()
+db.uploadMeasurementActions(metrics)
 for metric in metrics:
     print("%s\t%s" % (metric.getIdentifier(), metric.getDescription()))
     data = db.downloadMeasurementData(metric.getIdentifier())
