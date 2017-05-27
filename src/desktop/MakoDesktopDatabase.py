@@ -8,6 +8,7 @@ from ..lib.schedule.formats import *
 import os 
 import os.path
 from datetime import date 
+import shutil
 
 from YAPyOrg import * 
 
@@ -19,8 +20,68 @@ class MakoDesktopDatabase(MakoDatabase):
         """
         self.path = path
 
+    def removeFilesSatisfying(self, subdir, func):
+        path = "%s/%s/" % (self.path, subdir)
+        for name in os.listdir(path):
+            if func("%s/%s" % (path, name)):
+                os.remove("%s/%s" % (path, name))
+    
+    def removeDirectoriesSatisfying(self, subdir, func):
+        path = "%s/%s/" % (self.path, subdir)
+        for name in os.listdir(path):
+            if func("%s/%s" % (path, name)):
+                shutil.rmtree("%s/%s" % (path, name))
+
+    def makeTaskElement(self, t):
+        text = t.getText()
+        done = t.isDone()
+        expected = t.getExpectedTime()
+        spent = t.getSpentTime()
+        title = text + " - " + str(expected) + "h"
+        if spent > 0:
+            title = title + " - " + str(spent) + "h"
+        if done:
+            return ORGSection(title, level=3, DONE=True)
+        else:
+            return ORGSection(title, level=3, TODO=True)
+        
+
     def uploadProjects(self, projects):
-        pass
+        self.removeDirectoriesSatisfying("Projects", lambda x: os.path.isdir(x))
+        path = "%s/Projects/" % self.path
+        for p in projects:
+            os.mkdir(path + p.getName())
+            for sp in p.getSubprojects():
+                spath = path + p.getName() + "/" + sp.getName()
+                os.mkdir(spath)
+                elems=[]
+                elems.append(ORGSection("Specific"))
+                elems.append(ORGSection("Measurable"))
+                elems.append(ORGSection("Achievable"))
+                elems.append(ORGSection("Relevant"))
+                elems.append(ORGSection("Time-boxed"))
+                td = {}
+                for t in sp.getAllTasks():
+                    due = t.getDueDate()
+                    date_str = datetime.datetime.strftime(due, "%B %Y")
+                    if not date_str in td.keys():
+                        td[date_str] = [self.makeTaskElement(t)]
+                    else:
+                        td[date_str].append(self.makeTaskElement(t))
+                for period in sorted(td.keys(), key=lambda x: datetime.datetime.strptime(x, "%B %Y") - datetime.datetime(1970,1,1,0,0,0)):
+                    all_done = True
+                    for t in td[period]:
+                        all_done = all_done and t.isDONE()
+                    if all_done:      
+                        elems.append(ORGSection(period, DONE=True, level=2))
+                    else:
+                        elems.append(ORGSection(period, TODO=True, level=2))
+                    for t in td[period]:
+                        elems.append(t)
+                f = open("%s/plan.org" % spath, "w")
+                doc = ORGDocument(elems)
+                f.write(doc.getOutput())
+                f.close()
 
     def writeActionToJSON(self, action, fpath):
         f = open(fpath, "w")
@@ -48,7 +109,7 @@ class MakoDesktopDatabase(MakoDatabase):
             if not in_db:
                 # if action is not in db, we first create it 
                 os.mkdir("%s/%s/" % (path, action.getIdentifier()))
-                self.writeActionToJSON(action, "%s/%s/measure.json")
+                self.writeActionToJSON(action, "%s/%s/measure.json" % (path, action.getIdentifier()))
 
     def uploadMeasurementData(self, action_id, data):
         """
@@ -111,7 +172,7 @@ class MakoDesktopDatabase(MakoDatabase):
         elems = title.split(" ")
         if len(elems) >= 2:
             year = int(elems[1])
-            month = months.get(elems[0], 1)
+            month = months.get(elems[0].lower(), 1)
         return date(year, month, 28)
 
 

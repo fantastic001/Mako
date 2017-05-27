@@ -9,8 +9,10 @@ def short_title(task):
     return task.getText()
 
 db = MakoDesktopDatabase("/home/stefan/db/")
+db2 = MakoDesktopDatabase("/home/stefan/db2/")
 
 projects = db.downloadProjects()
+db2.uploadProjects(projects)
 
 for p in projects:
     print("Project: " + p.getName())
@@ -21,18 +23,18 @@ for p in projects:
             color = colorama.Fore.RED
             if t.isDone():
                 color = colorama.Fore.GREEN
-            print("%s\t\t| %s %s %d \t %d%s" % (color, text, " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
+            print("%s\t\t| %s | %s | %s %d \t %d%s" % (color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
 
 
 print("_" * 50)
 print("Metrics:")
 metrics = db.downloadMeasurementActions()
-db.uploadMeasurementActions(metrics)
+db2.uploadMeasurementActions(metrics)
 for metric in metrics:
     print("%s\t%s" % (metric.getIdentifier(), metric.getDescription()))
     data = db.downloadMeasurementData(metric.getIdentifier())
     print("\tLast: %f on %s" % (data[-1][1], str(data[-1][0])))
-    db.uploadMeasurementData(metric.getIdentifier(), data)
+    db2.uploadMeasurementData(metric.getIdentifier(), data)
 
 print("_" * 50)
 print("Schedules:")
