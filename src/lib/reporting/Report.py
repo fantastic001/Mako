@@ -34,6 +34,6 @@ class Report(object):
 
     def toJSON(self):
         d = self.fields
-        d["date"] = datetime.datetime.strptime(self.date, "%Y-%m-%d")
+        d["date"] = datetime.datetime.strftime(self.date, "%Y-%m-%d")
         d["name"] = self.name 
         return json.dumps(d, indent=4)

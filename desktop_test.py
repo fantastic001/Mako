@@ -39,11 +39,14 @@ for metric in metrics:
 print("_" * 50)
 print("Schedules:")
 schedules = db.downloadSchedules()
+db2.uploadSchedules(schedules)
 for schedule in schedules:
     d, p, e = schedule
     print("Schedule created %s" % str(d))
 
 print("_" * 50)
 print("Reports")
-for r in db.downloadReports():
+reports = db.downloadReports()
+db2.uploadReports(reports)
+for r in reports:
     print(r.getName() + " created " + str(r.getDate()))

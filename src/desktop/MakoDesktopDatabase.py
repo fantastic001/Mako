@@ -139,10 +139,20 @@ class MakoDesktopDatabase(MakoDatabase):
         pass
 
     def uploadSchedules(self, schedules):
-        pass
+        self.removeFilesSatisfying("Schedules", lambda x: x[-4:] == ".sff")
+        path = "%s/Schedules" % self.path 
+        for schedule in schedules:
+            writer = SFFWriter(schedule[2], schedule[1], filename="%s/%s" % (path, datetime.datetime.strftime(schedule[0], "%Y-%m-%d.sff")), day=schedule[0].day, month=schedule[0].month, year=schedule[0].year)
+            writer.write()
+            writer.close()
 
     def uploadReports(self, reports):
-        pass
+        path = "%s/Reports/" % self.path
+        self.removeFilesSatisfying("Reports", lambda x: x[-5:] == ".json")
+        for report in reports:
+            f = open("%s/%s.json" % (path,datetime.datetime.strftime(report.getDate(),"%Y-%m-%d-")+report.getName()), "w")
+            f.write(report.toJSON())
+            f.close()
 
 
     def readForeground(self, path):
