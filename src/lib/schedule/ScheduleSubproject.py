@@ -30,3 +30,6 @@ class ScheduleSubproject(object):
             if not t.isDone() and (t.getDueDate() - today).days < 31:
                 res.append(t)
         return res
+
+    def deleteAllTasks(self):
+        self.tasks = []
