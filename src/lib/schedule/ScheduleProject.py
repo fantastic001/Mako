@@ -28,5 +28,7 @@ class ScheduleProject(object):
     def getSubprojects(self):
         return self.subprojects 
 
+    def deleteAllSubprojects(self):
+        self.subprojects = []
 
 
