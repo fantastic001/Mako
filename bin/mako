@@ -221,7 +221,186 @@ def delete_task(project_name, name, text):
 stack.pushCommand("delete")
 stack.pushVariable("text")
 stack.assignAction(delete_task, "Delete task with specified text")
+stack.pop()
+stack.pop()
+stack.pop()
 
+stack.pushCommand("task")
+stack.pushVariable("text")
+
+def get_task_by_text(tasks, text):
+    candidates = [] 
+    for task in tasks:
+        if text.lower() in task.getText().lower():
+            candidates.append(task)
+    if len(candidates) == 0:
+        print("No tasks to change")
+        exit(0)
+    if len(candidates) > 1:
+        print("There's multiple tasks containing specified text, choose one:")
+        i = 1
+        for candidate in candidates:
+            t = candidate 
+            text = candidate.getText()
+            color = colorama.Fore.RED
+            if t.isDone():
+                color = colorama.Fore.GREEN
+            print("%d: %s\t\t| %s | %s | %s %d \t %d%s" % (i, color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
+        choice = int(input(">> "))
+        while choice > len(candidates) or choice <= 0:
+            print("Wrong number, try again")
+            choice = int(input(">> "))
+        return candidates[choice - 0]
+    else:
+        return candidates[0]
+
+
+def mark_task_done(project_name, name, text, **kw):
+    introduce("Marking task as done")
+    projects = db.downloadProjects()
+    i = get_project_index(projects, project_name)
+    if i == -1:
+        print("Project not found")
+        return 
+    j = get_subproject_index(projects[i].getSubprojects(), name)
+    if j == -1:
+        print("Subproject not found")
+        return 
+    get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).setDone()
+    db.uploadProjects(projects)
+stack.pushCommand("done")
+stack.assignAction(mark_task_done, "Mark specified task as done")
+
+stack.pop()
+
+def increase_spent_time(project_name, name, text, dt, **kw):
+    introduce("Changing spent time for a given task")
+    dt = int(dt)
+    projects = db.downloadProjects()
+    i = get_project_index(projects, project_name)
+    if i == -1:
+        print("Project not found")
+        return 
+    j = get_subproject_index(projects[i].getSubprojects(), name)
+    if j == -1:
+        print("Subproject not found")
+        return 
+    get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).increaseSpentTime(dt)
+    db.uploadProjects(projects)
+
+stack.pushCommand("do")
+stack.pushVariable("dt")
+stack.assignAction(increase_spent_time, "Increase spent time for a given task")
+
+
+stack.popAll()
+
+def list_schedules(**kw):
+    introduce("Listing all schedules")
+    schedules = db.downloadSchedules()
+    for schedule in schedules:
+        d, p, e = schedule
+        print("Schedule created %s" % str(d))
+
+stack.pushCommand("schedules")
+stack.assignAction(list_schedules, "List all scedules")
+stack.pushCommand("list")
+stack.assignAction(list_schedules, "List all scedules")
+stack.pop()
+
+
+stack.popAll()
+stack.pushCommand("schedule")
+
+def add_schedule(**kw):
+    introduce("Adding new schedule")
+    schedules = db.downloadSchedules()
+    schedules.append((datetime.date.today(), db.downloadProjects(), []))
+    db.uploadSchedules(schedules)
+
+stack.pushCommand("new")
+stack.assignAction(add_schedule, "Create new schedule")
+stack.pop()
+
+def show_tabular(table, column_size=10, has_header=True):
+    if len(table) == 0:
+        return 
+    l = len(table[0])
+    for row in table:
+        if l != len(row):
+            print("Table not alligned")
+            return 
+    i = 0
+    for row in table:
+        s = "|"
+        for column in row:
+            if len(column) > column_size:
+                column = column[:column_size]
+            s += " %s |" % (column + " "* (column_size - len(column)))
+        print(s)
+        i = i + 1
+        if has_header and i == 1:
+            print("-" * (1 + (3 + column_size) * len(row)))
+
+def show_schedule(schedule):
+    d,p,e = schedule
+    table = [["Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]]
+    for t in range(23):
+        l = [str(t) + ":00"] 
+        for day in range(1, 8):
+            # now we search for entry, if exists 
+            entry = None 
+            for ee in e:
+                if ee.getDay() == day and ee.getStart() <= t and t < ee.getStart() + ee.getDuration():
+                    entry = ee 
+            if entry == None:
+                l.append("")
+            else:
+                l.append(entry.getProject().getName()[:3] + " - " + entry.getSubproject().getName())
+        table.append(l)
+    show_tabular(table)
+
+def key_operator(entry):
+    return entry[0]
+def add_entry(day, time, duration, project_name, subproject_name, **kw):
+    introduce("Adding entry to schedule")
+    schedules = sorted(db.downloadSchedules(), key=key_operator)
+    projects = db.downloadProjects()
+    i = get_project_index(projects, project_name)
+    if i == -1:
+        print("Project not found")
+        return 
+    j = get_subproject_index(projects[i].getSubprojects(), subproject_name)
+    if j == -1:
+        print("Subproject not found")
+        return 
+    schedules[-1][2].append(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
+    db.uploadSchedules(schedules)
+    show_schedule(schedules[-1])
+
+
+stack.pushCommand("add")
+stack.pushVariable("day")
+stack.pushVariable("time")
+stack.pushVariable("duration")
+stack.pushVariable("project_name")
+stack.pushVariable("subproject_name")
+stack.assignAction(add_entry, "Add entry to lastly created schedule")
+stack.pop()
+stack.pop()
+stack.pop()
+stack.pop()
+stack.pop()
+stack.pop()
+
+def print_schedule(**kw):
+    introduce("Showing last schedule")
+    schedules = sorted(db.downloadSchedules(), key=key_operator)
+    show_schedule(schedules[-1])
+
+stack.assignAction(print_schedule, "Show lastly created schedule")
+stack.pushCommand("show")
+stack.assignAction(print_schedule, "Show lastly created schedule")
 
 stack.popAll()
 stack.pushCommand("help")

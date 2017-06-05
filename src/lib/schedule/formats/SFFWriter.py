@@ -1,5 +1,5 @@
 
-from .. import ScheduleWriter
+from .. import * 
 
 
 class SFFWriter(ScheduleWriter):
