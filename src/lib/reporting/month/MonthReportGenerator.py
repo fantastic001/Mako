@@ -29,10 +29,11 @@ class MonthReportGenerator(ReportGenerator):
     """
     
     def in_month(self, task):
-        return self.month == task.getDueDate().month
+        return self.month == task.getDueDate().month and task.getDueDate().year == self.year
 
-    def setup(self, month, time_per_task=2):
+    def setup(self, year, month, time_per_task=2):
         self.month = month
+        self.year = year
         self.time_per_task = time_per_task
 
     def generate(self):
@@ -40,13 +41,13 @@ class MonthReportGenerator(ReportGenerator):
         total = 0
         split = []
         report = Report("Monthly report for %s" % str(datetime.date.today()), datetime.date.today())
-        for project in projects:
+        report.setField("to_split", [])
+        for project in self.getProjects():
             for subproject in project.getSubprojects():
                 for task in subproject.getAllTasks():
                     if self.in_month(task):
                         total += task.getExpectedTime()
                         report.setField("expected_time", total)
-                        report.setField("to_split", [])
                         if task.getExpectedTime() > self.time_per_task:
                             report.getField("to_split").append({
                                 "project": project.getName(),
