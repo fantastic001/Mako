@@ -10,7 +10,7 @@ class QuarterReportGenerator(ReportGenerator):
 
     You have to pass which quarter to be scored and what values. This can be done through setup(...) method like this:
 
-        generator.setup(1, True, False)
+        generator.setup(2017, 1, True, False)
 
     This will setup generator to generate quarter report reporting  for quarter 1 with time estimates but not with real times. 
 

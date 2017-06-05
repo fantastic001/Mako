@@ -443,7 +443,7 @@ stack.assignAction(list_reports, "List all reports")
 
 stack.pushCommand("generate")
 
-class MonthReportView(ReportView):
+class MonthCLIReportView(ReportView):
     def show(self, report):
         print("Total expected time for all tasks: %s" % report.getField("expected_time"))
         print("Tasks that have to be split")
@@ -460,13 +460,49 @@ def generate_month(month, year, **kw):
     reports = db.downloadReports()
     reports.append(report)
     db.uploadReports(reports)
-    view = MonthReportView()
+    view = MonthCLIReportView()
     view.show(report)
 
 stack.pushCommand("monthly")
 stack.pushVariable("year")
 stack.pushVariable("month")
 stack.assignAction(generate_month)
+stack.pop()
+stack.pop()
+stack.pop()
+
+
+class QuarterCLIReportView(ReportView):
+    def show(self, report):
+        l = [["Project name", "Expected time", "Spent time"]]
+        for project in report.getField("projects"):
+            subprojects = report.getField("subprojects")[project]
+            expected = 0
+            real = 0
+            for subproject in subprojects["subprojects"]:
+                expected += int(subprojects["expected"][subproject])
+                real += int(subprojects["real"][subproject])
+            l.append([project, str(expected), str(real)])
+        show_tabular(l, 30)
+
+def generate_quarter(quarter, year, **kw):
+    introduce("Generating report")
+    generator = QuarterReportGenerator(db.downloadProjects())
+    generator.setup(int(year), int(quarter), True, True)
+    report = generator.generate()
+    reports = db.downloadReports()
+    reports.append(report)
+    db.uploadReports(reports)
+    view = QuarterCLIReportView()
+    view.show(report)
+
+stack.pushCommand("quarterly")
+stack.pushVariable("year")
+stack.pushVariable("quarter")
+stack.assignAction(generate_quarter)
+stack.pop()
+stack.pop()
+stack.pop()
 
 stack.popAll()
 stack.pushCommand("help")
