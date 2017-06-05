@@ -445,6 +445,8 @@ stack.pushCommand("generate")
 
 class MonthCLIReportView(ReportView):
     def show(self, report):
+        if report.getField("expected_time") == "":
+            return
         print("Total expected time for all tasks: %s" % report.getField("expected_time"))
         print("Tasks that have to be split")
         l = [["Project", "Subproject", "Task text"]]
@@ -474,6 +476,8 @@ stack.pop()
 
 class QuarterCLIReportView(ReportView):
     def show(self, report):
+        if report.getField("subprojects") == "":
+            return
         l = [["Project name", "Expected time", "Spent time"]]
         for project in report.getField("projects"):
             subprojects = report.getField("subprojects")[project]
@@ -503,6 +507,28 @@ stack.assignAction(generate_quarter)
 stack.pop()
 stack.pop()
 stack.pop()
+
+stack.pop()
+
+def show_report(report_name, **kw):
+    introduce("Showing report %s" % report_name)
+    reports = db.downloadReports()
+    r = None
+    for report in reports:
+        if report.getName() == report_name:
+            r = report 
+            break
+    if r == None:
+        print("Report not found")
+        return
+    view = MonthCLIReportView()
+    view.show(r)
+    view = QuarterCLIReportView()
+    view.show(r)
+
+stack.pushCommand("show")
+stack.pushVariable("report_name")
+stack.assignAction(show_report, "Show report")
 
 stack.popAll()
 stack.pushCommand("help")
