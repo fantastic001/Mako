@@ -403,6 +403,22 @@ stack.pushCommand("show")
 stack.assignAction(print_schedule, "Show lastly created schedule")
 
 stack.popAll()
+
+def measure_all():
+    introduce("Measuring all metric")
+    actions = db.downloadMeasurementActions()
+    ams = AMS()
+    for action in actions:
+        metric = action
+        data = db.downloadMeasurementData(metric.getIdentifier())
+        val = metric.measure()
+        print("%s: %f" % (metric.getIdentifier(), val))
+        data.append((datetime.date.today(), val))
+        db.uploadMeasurementData(metric.getIdentifier(), data)
+stack.pushCommand("measure")
+stack.assignAction(measure_all, "Run measurement of all metrics")
+
+stack.popAll()
 stack.pushCommand("help")
 stack.assignAction(lambda: print(stack.getHelp()), "Get help")
 stack.execute(sys.argv)
