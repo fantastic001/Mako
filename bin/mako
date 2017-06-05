@@ -417,6 +417,18 @@ def measure_all():
         db.uploadMeasurementData(metric.getIdentifier(), data)
 stack.pushCommand("measure")
 stack.assignAction(measure_all, "Run measurement of all metrics")
+stack.pop()
+
+def list_metrics():
+    introduce("Listing all metrics with last value")
+    actions = db.downloadMeasurementActions()
+    ams = AMS()
+    for action in actions:
+        data = db.downloadMeasurementData(action.getIdentifier())
+        print("%s: %f | on %s" % (action.getIdentifier(), data[-1][1], data[-1][0]))
+    
+stack.pushCommand("metrics")
+stack.assignAction(list_metrics, "Lists all metrics with last values")
 
 stack.popAll()
 stack.pushCommand("help")
