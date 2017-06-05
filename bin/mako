@@ -5,6 +5,8 @@ from ArgumentStack import *
 from mako.lib.schedule import * 
 from mako.lib.ams import * 
 from mako.lib.reporting import * 
+from mako.lib.reporting.month import * 
+from mako.lib.reporting.quarter import * 
 from mako.desktop import * 
 
 import sys
@@ -429,6 +431,42 @@ def list_metrics():
     
 stack.pushCommand("metrics")
 stack.assignAction(list_metrics, "Lists all metrics with last values")
+stack.popAll()
+
+def list_reports():
+    introduce("Listing reports")
+    reports = db.downloadReports()
+    for report in reports:
+        print("%s | %s" % (report.getName(), str(report.getDate())))
+stack.pushCommand("reports")
+stack.assignAction(list_reports, "List all reports")
+
+stack.pushCommand("generate")
+
+class MonthReportView(ReportView):
+    def show(self, report):
+        print("Total expected time for all tasks: %s" % report.getField("expected_time"))
+        print("Tasks that have to be split")
+        l = [["Project", "Subproject", "Task text"]]
+        for task in report.getField("to_split"):
+            l.append([task["project"], task["subproject"], task["task"]])
+        show_tabular(l, 30)
+
+def generate_month(month, year, **kw):
+    introduce("Generating report")
+    generator = MonthReportGenerator(db.downloadProjects())
+    generator.setup(int(year), int(month))
+    report = generator.generate()
+    reports = db.downloadReports()
+    reports.append(report)
+    db.uploadReports(reports)
+    view = MonthReportView()
+    view.show(report)
+
+stack.pushCommand("monthly")
+stack.pushVariable("year")
+stack.pushVariable("month")
+stack.assignAction(generate_month)
 
 stack.popAll()
 stack.pushCommand("help")

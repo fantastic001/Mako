@@ -47,11 +47,11 @@ class MonthReportGenerator(ReportGenerator):
                 for task in subproject.getAllTasks():
                     if self.in_month(task):
                         total += task.getExpectedTime()
-                        report.setField("expected_time", total)
                         if task.getExpectedTime() > self.time_per_task:
                             report.getField("to_split").append({
                                 "project": project.getName(),
                                 "subproject": subproject.getName(),
                                 "task": task.getText()
                             })
+        report.setField("expected_time", total)
         return report
