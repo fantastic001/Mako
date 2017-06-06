@@ -301,7 +301,7 @@ def list_schedules(**kw):
     introduce("Listing all schedules")
     schedules = db.downloadSchedules()
     for schedule in schedules:
-        d, p, e = schedule
+        d = schedule.getDate()
         print("Schedule created %s" % str(d))
 
 stack.pushCommand("schedules")
@@ -317,7 +317,7 @@ stack.pushCommand("schedule")
 def add_schedule(**kw):
     introduce("Adding new schedule")
     schedules = db.downloadSchedules()
-    schedules.append((datetime.date.today(), db.downloadProjects(), []))
+    schedules.append(Schedule(datetime.date.today()))
     db.uploadSchedules(schedules)
 
 stack.pushCommand("new")
@@ -345,7 +345,7 @@ def show_tabular(table, column_size=10, has_header=True):
             print("-" * (1 + (3 + column_size) * len(row)))
 
 def show_schedule(schedule):
-    d,p,e = schedule
+    e = schedule.getEntries()
     table = [["Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]]
     for t in range(24):
         l = [str(t) + ":00"] 
@@ -363,7 +363,7 @@ def show_schedule(schedule):
     show_tabular(table)
 
 def key_operator(entry):
-    return entry[0]
+    return entry.getDate()
 def add_entry(day, time, duration, project_name, subproject_name, **kw):
     introduce("Adding entry to schedule")
     schedules = sorted(db.downloadSchedules(), key=key_operator)
@@ -376,7 +376,7 @@ def add_entry(day, time, duration, project_name, subproject_name, **kw):
     if j == -1:
         print("Subproject not found")
         return 
-    schedules[-1][2].append(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
+    schedules[-1].addEntry(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
     db.uploadSchedules(schedules)
     show_schedule(schedules[-1])
 
