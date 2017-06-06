@@ -21,3 +21,10 @@ class AMSBaseAction:
     
     def measure(self):
         pass
+
+    def toDict(self):
+        data = self.getConfig()
+        data["id"] = self.getIdentifier()
+        data["action"] = self.name
+        data["description"] = self.getDescription()
+        return data

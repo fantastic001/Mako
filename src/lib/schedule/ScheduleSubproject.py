@@ -1,6 +1,8 @@
 
 import datetime
 
+from .Task import * 
+
 class ScheduleSubproject(object):
 
     def __init__(self, name):
@@ -33,3 +35,17 @@ class ScheduleSubproject(object):
 
     def deleteAllTasks(self):
         self.tasks = []
+
+    def toDict(self):
+        d = {}
+        d["name"] = self.name
+        d["tasks"] = []
+        for task in self.tasks:
+            d["tasks"].append(task.toDict())
+        return d
+
+    def fromDict(d):
+        sp = ScheduleSubproject(d["name"])
+        for task in d["tasks"]:
+            sp.addTask(Task.fromDict(task))
+        return sp 

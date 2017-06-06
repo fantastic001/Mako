@@ -85,11 +85,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def writeActionToJSON(self, action, fpath):
         f = open(fpath, "w")
-        data = action.getConfig()
-        data["id"] = action.getIdentifier()
-        data["action"] = action.name
-        data["description"] = action.getDescription()
-        f.write(json.dumps(data, indent=4))
+        f.write(json.dumps(action.toDict(), indent=4))
         f.close()
 
     def uploadMeasurementActions(self, actions):

@@ -1,4 +1,6 @@
 
+from .ScheduleSubproject import * 
+
 class ScheduleProject(object):
     
     def __init__(self, name, color_bg, color_fg):
@@ -31,4 +33,28 @@ class ScheduleProject(object):
     def deleteAllSubprojects(self):
         self.subprojects = []
 
+    def toDict(self):
+        d = {}
+        d["name"] = self.name
+        r,g,b = self.color_bg 
+        d["color_bg_r"] = r
+        d["color_bg_g"] = g
+        d["color_bg_b"] = b
+        
+        r,g,b = self.color_fg
+        d["color_fg_r"] = r
+        d["color_fg_g"] = g
+        d["color_fg_b"] = b
+        d["subprojects"] = []
+        for sp in self.subprojects:
+            d["subprojects"].append(sp.toDict())
+        return d
 
+    def fromDict(d):
+        name = d["name"]
+        color_bg = (int(d["color_bg_r"]), int(d["color_bg_g"]), int(d["color_bg_b"]))
+        color_fg = (int(d["color_fg_r"]), int(d["color_fg_g"]), int(d["color_fg_b"]))
+        p = ScheduleProject(name, color_bg, color_fg)
+        for sp in d["subprojects"]:
+            p.addSubproject(ScheduleSubproject.fromDict(sp))
+        return p 

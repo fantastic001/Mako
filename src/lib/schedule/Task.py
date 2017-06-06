@@ -1,4 +1,6 @@
 
+import datetime
+
 class Task(object):
     
     def __init__(self, text, expected, spent=0, done=False, due=None):
@@ -31,3 +33,16 @@ class Task(object):
 
     def setDone(self):
         self.done = True
+
+    def toDict(self):
+        d = {}
+        d["text"] = self.text
+        d["expected"] = self.expected
+        d["spent"] = self.spent
+        d["done"] = self.done
+        if self.due != None:
+            d["due"] = datetime.datetime.strftime(self.due, "%Y-%m-%d")
+        return d 
+
+    def fromDict(d):
+        return Task(d["text"], int(d["expected"]), int(d["spent"]), bool(d["done"]), datetime.datetime.strptime(d.get("due", None), "%Y-%m-%d"))

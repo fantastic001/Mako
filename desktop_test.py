@@ -2,6 +2,7 @@
 from src.desktop import * 
 
 import colorama
+import json 
 
 def short_title(task):
     if len(task.getText()) > 30:
@@ -13,6 +14,10 @@ db2 = MakoDesktopDatabase("/home/stefan/db2/")
 
 projects = db.downloadProjects()
 db2.uploadProjects(projects)
+
+f = open("project.json", "w")
+f.write(json.dumps(projects[0].toDict(), indent=4))
+f.close()
 
 for p in projects:
     print("Project: " + p.getName())

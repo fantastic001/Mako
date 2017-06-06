@@ -33,7 +33,22 @@ class Report(object):
         self.fields = data 
 
     def toJSON(self):
+        return json.dumps(self.toDict(), indent=4)
+
+    def toDict(self):
         d = self.fields
         d["date"] = datetime.datetime.strftime(self.date, "%Y-%m-%d")
         d["name"] = self.name 
-        return json.dumps(d, indent=4)
+        return d
+
+    def fromDict(data):
+        date = None
+        name = ""
+        if "date" in data.keys():
+            date = datetime.datetime.strptime(data["date"], "%Y-%m-%d")
+        if "name" in data.keys():
+            name = data["name"]
+        r = Report(name, date)
+        for k in data.keys():
+            r.setField(k, data[k])
+        return r 
