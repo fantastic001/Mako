@@ -59,11 +59,7 @@ class MakoDatabase(object):
 
     def downloadSchedules(self):
         """
-        Returns list of tuples where:
-
-        1. element: date of creation (or None if db does not provide it)
-        2. element: list of all projects 
-        3. element: list of schedule entries
+        Returns list of Schedule object
         """
         pass
 

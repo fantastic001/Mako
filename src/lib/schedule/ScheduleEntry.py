@@ -24,3 +24,19 @@ class ScheduleEntry(object):
     def getDuration(self):
         return self.duration 
 
+    def toDict(self):
+        d = {}
+        d["project"] = self.project.toDict()
+        d["subproject"] = self.subproject.toDict()
+        d["day"] = self.day
+        d["start"] = self.start 
+        d["duration"] = self.duration 
+        return d 
+
+    def fromDict(d):
+        proj = ScheduleProject.fromDict(d["project"])
+        sp = ScheduleSubproject.fromDict(d["subproject"])
+        day = int(d["day"])
+        start = int(d["start"])
+        duration = int(d["duration"])
+        return ScheduleEntry(proj, sp, day, start, duration)

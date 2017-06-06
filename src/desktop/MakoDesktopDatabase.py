@@ -138,7 +138,7 @@ class MakoDesktopDatabase(MakoDatabase):
         self.removeFilesSatisfying("Schedules", lambda x: x[-4:] == ".sff")
         path = "%s/Schedules" % self.path 
         for schedule in schedules:
-            writer = SFFWriter(schedule[2], schedule[1], filename="%s/%s" % (path, datetime.datetime.strftime(schedule[0], "%Y-%m-%d.sff")), day=schedule[0].day, month=schedule[0].month, year=schedule[0].year)
+            writer = SFFWriter(schedule)
             writer.write()
             writer.close()
 
@@ -299,9 +299,9 @@ class MakoDesktopDatabase(MakoDatabase):
             if os.path.isfile("%s/%s"% (path, name)) and name[-4:] == ".sff":
                 reader = SFFReader()
                 reader.open(filename="%s/%s" % (path, name))
-                reader.read()
+                s = reader.read()
                 reader.close()
-                res.append((reader.getDate(), reader.readProjects(), reader.readEntries()))
+                res.append(s)
         return res
 
 

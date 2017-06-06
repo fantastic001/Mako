@@ -1,4 +1,7 @@
 
+from .ScheduleProject import * 
+from .ScheduleEntry import * 
+
 class ScheduleWriter(object):
     """
     How to use:
@@ -8,21 +11,20 @@ class ScheduleWriter(object):
     writer.close()
     """
 
-    def __init__(self, entries, projects = None, **params):
-        self.entries = entries 
-        if projects == None:
-            self.projects = [] 
-        else:
-            self.projects = projects 
-        for e in entries:
+    def __init__(self, schedule, **params):
+        self.entries = schedule.getEntries()
+        self.projects = []
+        for e in self.entries:
             fp = None
             for p in self.projects:
                 if p.getName() == e.getProject().getName():
                     fp = p 
                     break 
             if fp == None:
-                np = ScheduleProject(np.getName(), fp.getBackgroundColor(), fp.getForegroundColor())
+                fp = e.getProject()
+                np = ScheduleProject(fp.getName(), fp.getBackgroundColor(), fp.getForegroundColor())
                 np.addSubproject(e.getSubproject())
+                self.projects.append(np)
             else:
                 fp.addSubproject(e.getSubproject())
         self.params = params

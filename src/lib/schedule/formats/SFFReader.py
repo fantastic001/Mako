@@ -3,6 +3,7 @@ from .. import ScheduleReader
 from .. import ScheduleProject 
 from .. import ScheduleSubproject
 from .. import ScheduleEntry 
+from .. import Schedule
 
 from datetime import date 
 
@@ -50,22 +51,12 @@ class SFFReader(ScheduleReader):
             duration = int.from_bytes(self.file.read(1), "big")
             self.entries.append(ScheduleEntry(self.projects[project_id], self.projects[project_id].getSubprojects()[subproject_id], day, start, duration))
 
-    def readProjects(self):
-        """
-        This method implements reading projects.
-
-        Must return list of ScheduleProject objects
-        """
-        return self.projects
-
-    def readEntries(self):
-        """
-        Implements reading entries.
-
-        Should return list of ScheduleEntry objects
-        """
-        return self.entries
-
+    def read(self):
+        s = Schedule(self.date)
+        for e in self.entries:
+            s.addEntry(e)
+        return s
+    
     def close(self):
         """
         Implements closing.

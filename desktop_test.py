@@ -46,8 +46,10 @@ print("Schedules:")
 schedules = db.downloadSchedules()
 db2.uploadSchedules(schedules)
 for schedule in schedules:
-    d, p, e = schedule
-    print("Schedule created %s" % str(d))
+    print("Schedule created %s" % str(schedule.getDate()))
+f = open("schedule.json", "w")
+f.write(json.dumps(schedules[-1].toDict(),  indent=4))
+f.close()
 
 print("_" * 50)
 print("Reports")
