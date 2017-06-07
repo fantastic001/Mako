@@ -1,4 +1,9 @@
 
+from ..schedule import * 
+from ..reporting import * 
+from ..ams.actions import * 
+from ..ams import * 
+
 class MakoDatabase(object):
 
     def uploadProjects(self, projects):
@@ -65,3 +70,60 @@ class MakoDatabase(object):
 
     def downloadReports(self):
         pass
+
+    def toDict(self):
+        d = {}
+        d["projects"] = [] 
+        projects = self.downloadProjects()
+        for project in projects:
+            d["projects"].append(project.toDict())
+        
+        d["schedules"] = []
+        schedules = self.downloadSchedules()
+        for schedule in schedules:
+            d["schedules"].append(schedule.toDict())
+
+        metrics = self.downloadMeasurementActions()
+        d["metrics"] = [] 
+        d["data"] = []
+        for metric in metrics:
+            d["metrics"].append(metric.toDict())
+            data = self.downloadMeasurementData(metric.getIdentifier())
+            dd = {"id": metric.getIdentifier()}
+            dd["data"] = [] 
+            for val in data:
+                dd["data"].append({"date": datetime.datetime.strftime(val[0], "%Y-%m-%d"), "value": val[1]})
+            d["data"].append(dd)
+        d["reports"] = [] 
+        reports = self.downloadReports()
+        for report in reports:
+            d["reports"].append(report.toDict())
+        return d
+
+    def fromDict(self, d):
+        projects = []
+        for project in d["projects"]:
+            projects.append(ScheduleProject.fromDict(project))
+        self.uploadProjects(projects)
+        
+        schedules = []
+        for schedule in d["schedules"]:
+            schedules.append(Schedule.fromDict(schedule))
+        self.uploadSchedules(schedules)
+        
+        ams = AMS()
+        metrics = []
+        for metric in d["metrics"]:
+            metrics.append(ams.getAction(metric))
+        self.uploadMeasurementActions(metrics)
+
+        reports = []
+        for report in d["reports"]:
+            reports.append(Report.fromDict(report))
+        self.uploadReports(reports)
+
+        for data_obj in d["data"]:
+            data = []
+            for val in data_obj["data"]:
+                data.append((datetime.datetime.strptime(val["date"], "%Y-%m-%d"), float(val["value"])))
+            self.uploadMeasurementData(data_obj["id"], data)

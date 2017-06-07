@@ -57,3 +57,12 @@ reports = db.downloadReports()
 db2.uploadReports(reports)
 for r in reports:
     print(r.getName() + " created " + str(r.getDate()))
+
+f = open("db.json", "w")
+f.write(json.dumps(db.toDict()))
+f.close()
+
+f = open("db.json")
+db3 = MakoDesktopDatabase("/home/stefan/db3")
+db3.fromDict(json.loads(f.read()))
+f.close()

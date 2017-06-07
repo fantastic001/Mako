@@ -1,4 +1,5 @@
 
+from .ScheduleProject import * 
 
 class ScheduleEntry(object):
     
