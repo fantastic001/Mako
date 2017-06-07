@@ -1,0 +1,129 @@
+{
+    "date": "2017-05-02",
+    "entries": [
+        {
+            "project": {
+                "name": "University",
+                "color_bg_r": 255,
+                "color_bg_g": 0,
+                "color_bg_b": 0,
+                "color_fg_r": 255,
+                "color_fg_g": 255,
+                "color_fg_b": 255,
+                "subprojects": [
+                    {
+                        "name": "Calculus",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Algebra",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Computer Science",
+                        "tasks": []
+                    }
+                ]
+            },
+            "subproject": {
+                "name": "Calculus",
+                "tasks": []
+            },
+            "day": 1,
+            "start": 14,
+            "duration": 4
+        },
+        {
+            "project": {
+                "name": "University",
+                "color_bg_r": 255,
+                "color_bg_g": 0,
+                "color_bg_b": 0,
+                "color_fg_r": 255,
+                "color_fg_g": 255,
+                "color_fg_b": 255,
+                "subprojects": [
+                    {
+                        "name": "Calculus",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Algebra",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Computer Science",
+                        "tasks": []
+                    }
+                ]
+            },
+            "subproject": {
+                "name": "Calculus",
+                "tasks": []
+            },
+            "day": 4,
+            "start": 14,
+            "duration": 4
+        },
+        {
+            "project": {
+                "name": "University",
+                "color_bg_r": 255,
+                "color_bg_g": 0,
+                "color_bg_b": 0,
+                "color_fg_r": 255,
+                "color_fg_g": 255,
+                "color_fg_b": 255,
+                "subprojects": [
+                    {
+                        "name": "Calculus",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Algebra",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Computer Science",
+                        "tasks": []
+                    }
+                ]
+            },
+            "subproject": {
+                "name": "Calculus",
+                "tasks": []
+            },
+            "day": 5,
+            "start": 14,
+            "duration": 4
+        },
+        {
+            "project": {
+                "name": "Community",
+                "color_bg_r": 0,
+                "color_bg_g": 255,
+                "color_bg_b": 0,
+                "color_fg_r": 255,
+                "color_fg_g": 255,
+                "color_fg_b": 255,
+                "subprojects": [
+                    {
+                        "name": "Milica",
+                        "tasks": []
+                    },
+                    {
+                        "name": "Nikola",
+                        "tasks": []
+                    }
+                ]
+            },
+            "subproject": {
+                "name": "Milica",
+                "tasks": []
+            },
+            "day": 2,
+            "start": 19,
+            "duration": 4
+        }
+    ]
+}
