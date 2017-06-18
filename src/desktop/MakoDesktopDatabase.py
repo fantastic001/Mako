@@ -4,6 +4,7 @@ from ..lib.schedule import *
 from ..lib.reporting import * 
 from ..lib.ams import * 
 from ..lib.schedule.formats import * 
+from ..lib.table import * 
 
 import os 
 import os.path
@@ -158,6 +159,15 @@ class MakoDesktopDatabase(MakoDatabase):
             condition = conditions[i]
             f = open("%s/%d.json" % (path, i), "w")
             f.write(json.dumps(condition.toDict()))
+            f.close()
+    
+    def uploadTables(self, tables):
+        self.removeFilesSatisfying("Tables", lambda x: x[-5:] == ".json")
+        path = "%s/Tables" % self.path
+        for i in range(len(tables)):
+            table = tables[i]
+            f = open("%s/%d.json" % (path, i), "w")
+            f.write(json.dumps(table.toDict()))
             f.close()
 
     def readForeground(self, path):
@@ -334,5 +344,15 @@ class MakoDesktopDatabase(MakoDatabase):
             if name[-5:] == ".json":
                 f = open("%s/%s" % (path, name))
                 res.append(ScheduleCondition.fromDict(json.loads(f.read())))
+                f.close()
+        return res
+
+    def downloadTables(self):
+        res = [] 
+        path = "%s/Tables/" % self.path
+        for name in os.listdir(path):
+            if name[-5:] == ".json":
+                f = open("%s/%s" % (path, name))
+                res.append(Table.fromDict(json.loads(f.read())))
                 f.close()
         return res

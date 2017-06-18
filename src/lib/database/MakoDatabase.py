@@ -43,6 +43,9 @@ class MakoDatabase(object):
     def uploadDefaultConditions(self, conditions):
         pass
 
+    def uploadTables(self, tables):
+        pass
+
     def downloadProjects(self):
         pass
 
@@ -79,6 +82,9 @@ class MakoDatabase(object):
         """
         pass
 
+    def downloadTables(self):
+        pass
+
     def toDict(self):
         d = {}
         d["projects"] = [] 
@@ -110,6 +116,11 @@ class MakoDatabase(object):
         reports = self.downloadReports()
         for report in reports:
             d["reports"].append(report.toDict())
+
+        d["tables"] = []
+        tables = self.downloadTables()
+        for table in tables:
+            d["tables"].append(table.toDict())
         return d
 
     def fromDict(self, d):
@@ -144,3 +155,8 @@ class MakoDatabase(object):
             for val in data_obj["data"]:
                 data.append((datetime.datetime.strptime(val["date"], "%Y-%m-%d"), float(val["value"])))
             self.uploadMeasurementData(data_obj["id"], data)
+        
+        tables = [] 
+        for table in d["tables"]:
+            tables.append(Table.fromDict(table))
+        self.uploadTables(tables)

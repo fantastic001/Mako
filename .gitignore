@@ -12,3 +12,5 @@ src/lib/ams/actions/__pycache__/
 test_data/db/Notes/Size/progress.csv
 src/lib/database/__pycache__/
 src/desktop/__pycache__/
+src/lib/table/__pycache__/
+build/

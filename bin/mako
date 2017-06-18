@@ -7,6 +7,7 @@ from mako.lib.ams import *
 from mako.lib.reporting import * 
 from mako.lib.reporting.month import * 
 from mako.lib.reporting.quarter import * 
+from mako.lib.table import * 
 from mako.desktop import * 
 
 import sys
@@ -542,6 +543,30 @@ def show_report(report_name, **kw):
 stack.pushCommand("show")
 stack.pushVariable("report_name")
 stack.assignAction(show_report, "Show report")
+
+stack.popAll()
+stack.pushCommand("tables")
+def list_tables(**kw):
+    introduce("Listing tables")
+    tables = db.downloadTables()
+    for table in tables:
+        print(table.getName())
+stack.assignAction(list_tables, "List all tables")
+stack.pushCommand("list")
+stack.assignAction(list_tables, "List all tables")
+stack.pop()
+
+def create_table(name, fields, **kw):
+    introduce("Adding table %s" % name)
+    t = Table(name, fields.split("|"))
+    tables = db.downloadTables()
+    tables.append(t)
+    db.uploadTables(tables)
+stack.pushCommand("new")
+stack.pushVariable("name")
+stack.pushVariable("fields")
+stack.assignAction(create_table, "Creates new table with name and fields where each column is separated by |")
+
 
 stack.popAll()
 stack.pushCommand("database")
