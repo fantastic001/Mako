@@ -43,3 +43,31 @@ class Table(object):
         for e in d["entries"]:
             table.addEntry(e)
         return table
+
+    def __str__(self):
+        s = "\n"
+        column_size = 60 // len(self.getFields())
+        header = ["No"] + self.getFields()
+        s += "|"
+        for i in range(len(header)):
+            column = header[i]
+            if i == 0:
+                k = 5
+            else:
+                k = column_size
+            if len(column) > k:
+                column = column[:k]
+            s += " %s |" % (column + " "* (k - len(column)))
+        s += "\n"
+        s += "-" * (9 + (3 + column_size) * (len(header) - 1))
+        s += "\n"
+        i = 1
+        for row in self.getEntries():
+            s += "| %s%s |" % (str(i), " " * (5-len(str(i))))
+            for column in row:
+                if len(column) > column_size:
+                    column = column[:column_size]
+                s += " %s |" % (column + " "* (column_size - len(column)))
+            i = i + 1
+            s += "\n"
+        return s 
