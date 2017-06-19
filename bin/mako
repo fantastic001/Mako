@@ -590,7 +590,18 @@ def show_table(name, **kw):
 stack.assignAction(show_table, "Shows specified table")
 stack.pushCommand("show")
 stack.assignAction(show_table, "Shows specified table")
+stack.pop()
 
+def delete_table(name, **kw):
+    introduce("Removing table")
+    res = [] 
+    tables = db.downloadTables()
+    for table in tables:
+        if table.getName() != name:
+            res.append(table)
+    db.uploadTables(res)
+stack.pushCommand("delete")
+stack.assignAction(delete_table, "Delete specified table")
 stack.pop()
 
 def table_add_entry(name, data, **kw):
