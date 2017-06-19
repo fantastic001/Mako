@@ -567,6 +567,90 @@ stack.pushVariable("name")
 stack.pushVariable("fields")
 stack.assignAction(create_table, "Creates new table with name and fields where each column is separated by |")
 
+def find_table_by_name(name, tables):
+    for table in tables:
+        if table.getName().lower() == name.lower():
+            return table
+    return None
+
+stack.pop()
+stack.pop()
+stack.pop()
+stack.pop()
+
+stack.pushCommand("table")
+stack.pushVariable("name")
+def show_table(name, **kw):
+    introduce("Table: %s" % name)
+    table = find_table_by_name(name, db.downloadTables())
+    if table != None:
+        print(table)
+    else:
+        print("Not found")
+stack.assignAction(show_table, "Shows specified table")
+stack.pushCommand("show")
+stack.assignAction(show_table, "Shows specified table")
+
+stack.pop()
+
+def table_add_entry(name, data, **kw):
+    introduce("Adding entry to table")
+    tables = db.downloadTables()
+    table = find_table_by_name(name, tables)
+    if table != None:
+        table.addEntry(data.split("|"))
+        db.uploadTables(tables)
+stack.pushCommand("add")
+stack.pushVariable("data")
+stack.assignAction(table_add_entry, "Adds entry to table, data is specified such that each field is separated by |")
+
+stack.pop()
+stack.pop()
+
+stack.pushCommand("entry")
+stack.pushVariable("entry_id")
+
+def show_entry(name, entry_id, **kw):
+    introduce("Displaying entry")
+    tables = db.downloadTables()
+    table = find_table_by_name(name, tables)
+    if table == None:
+        print("Not found")
+        return 
+    e = table.getEntries()[int(entry_id)-1]
+    i = 0 
+    for field in table.getFields():
+        print("%s: %s" % (field, e[i]))
+        i = i + 1
+stack.assignAction(show_entry, "Show specified entry")
+stack.pushCommand("show")
+stack.assignAction(show_entry, "Show specified entry")
+stack.pop()
+
+def table_delete_entry(name, entry_id, **kw):
+    introduce("Removing entry %s" % entry_id)
+    tables = db.downloadTables()
+    table = find_table_by_name(name, tables)
+    if table != None:
+        table.removeEntry(int(entry_id))
+        db.uploadTables(tables)
+stack.pushCommand("delete")
+stack.assignAction(table_delete_entry, "Deletes specified entry")
+stack.pop()
+
+def table_update_entry(name, entry_id, data, **kw):
+    introduce("Updating entry %s" % entry_id)
+    tables = db.downloadTables()
+    table = find_table_by_name(name, tables)
+    if table != None:
+        table.updateEntry(int(entry_id), data.split("|"))
+        db.uploadTables(tables)
+stack.pushCommand("update")
+stack.pushVariable("data")
+stack.assignAction(table_update_entry, "Updates specified entry with new data such that each field is separated by |")
+stack.pop()
+stack.pop()
+
 
 stack.popAll()
 stack.pushCommand("database")
