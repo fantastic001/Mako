@@ -593,6 +593,20 @@ stack.pushCommand("show")
 stack.assignAction(show_table, "Shows specified table")
 stack.pop()
 
+def table_filter(name, filter, **kw):
+    introduce("Filtered results")
+    table = find_table_by_name(name, db.downloadTables())
+    if table != None:
+        show_tabular(table.getEntries(filter))
+        print("Total number of items: %d" % table.getEntryCount(filter))
+    else:
+        print("Not found")
+stack.pushCommand("filter")
+stack.pushVariable("filter")
+stack.assignAction(table_filter, "Show only entries where at least one column contains specified filter")
+stack.pop()
+stack.pop()
+
 def delete_table(name, **kw):
     introduce("Removing table")
     res = [] 

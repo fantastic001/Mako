@@ -23,6 +23,11 @@ class TestTable(unittest.TestCase):
         self.table.removeEntry(1)
         self.assertEqual(len(self.table.getEntries()), 0)
 
+    def test_search(self):
+        self.table.addEntry(["a", "b", "c"])
+        self.assertEqual(self.table.getEntries("a"), [["a", "b", "c"]])
+        self.assertEqual(self.table.getEntries("d"), [])
+
     def test_entry_update(self):
         self.table.addEntry(["a", "b", "c"])
         self.assertEqual(self.table.getEntries(), [["a", "b", "c"]])

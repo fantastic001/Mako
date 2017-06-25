@@ -12,8 +12,17 @@ class Table(object):
     def getFields(self):
         return self.fields
 
-    def getEntries(self):
-        return self.entries 
+    def getEntries(self, search=None):
+        if search == None:
+            return self.entries 
+        else:
+            res = [] 
+            for e in self.entries:
+                found = False 
+                for f in e:
+                    if search in f:
+                        res.append(e)
+            return res
 
     def addEntry(self, e):
         self.entries.append(e)
@@ -26,8 +35,8 @@ class Table(object):
         if k > 0 and k <= len(self.entries):
             self.entries[k-1] = e 
 
-    def getEntryCount(self):
-        return len(self.entries)
+    def getEntryCount(self, search=None):
+        return len(self.getEntries(search))
 
     def toDict(self):
         d = {}
