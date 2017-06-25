@@ -9,5 +9,5 @@ class TestAMSDirectorySizeAction(unittest.TestCase):
         a = AMSDirectorySizeAction("m", "Measures directory size", {
             "path": "test_data/empty_dir"
         })
-        self.assertEqual(a.measure(), 0)
+        self.assertEqual(a.measure([]), 0)
     

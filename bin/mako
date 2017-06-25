@@ -424,10 +424,11 @@ def measure_all():
     introduce("Measuring all metric")
     actions = db.downloadMeasurementActions()
     ams = AMS()
+    tables = db.downloadTables()
     for action in actions:
         metric = action
         data = db.downloadMeasurementData(metric.getIdentifier())
-        val = metric.measure()
+        val = metric.measure(tables)
         print("%s: %f" % (metric.getIdentifier(), val))
         data.append((datetime.date.today(), val))
         db.uploadMeasurementData(metric.getIdentifier(), data)

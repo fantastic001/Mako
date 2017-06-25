@@ -12,7 +12,7 @@ class AMSLineCountAction(AMSBaseAction):
 
     name = "filesystem.file.lineCount"
 
-    def measure(self):
+    def measure(self, tables):
         path = self.getConfig().get("path", "/")
         s = 0 
         f = open(path, "r")

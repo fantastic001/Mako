@@ -19,7 +19,7 @@ class AMSScriptAction(AMSBaseAction):
 
     name = "os.script"
 
-    def measure(self):
+    def measure(self, tables):
         path = self.getConfig().get("path", "script.sh")
         result = self.getConfig().get("result_as", "stdout")
         args = self.getConfig().get("args", "")

@@ -23,6 +23,6 @@ class AMSDirectorySizeAction(AMSBaseAction):
                 total += self.getDirectorySize(entry.path)
         return total
 
-    def measure(self):
+    def measure(self, tables):
         path = self.getConfig().get("path", "/")
         return self.getDirectorySize(path) / 2**20

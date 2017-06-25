@@ -15,7 +15,7 @@ class AMSOrgModeDoneCountAction(AMSBaseAction):
 
     name = "org.sections.done.count"
 
-    def measure(self):
+    def measure(self, tables):
         s = 0
         f = ORGFile(self.getConfig().get("path", "sections.org"))
         doc = f.getDocument()

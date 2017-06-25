@@ -13,6 +13,6 @@ class TestAMS(unittest.TestCase):
         subproject = ScheduleSubproject("Size")
         ams = AMS()
         f = open(fname)
-        m = ams.measure(project, subproject, json.loads(f.read())["measurings"])
+        m = ams.measure(project, subproject, [], json.loads(f.read())["measurings"])
         f.close()
         self.assertEqual(len(m), 3)

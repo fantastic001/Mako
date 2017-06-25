@@ -11,12 +11,15 @@ class AMS(object):
         AMSLineCountAction,
         AMSOrgModeDoneCountAction,
         AMSOrgModeSectionCountAction,
+        AMSTableEntryCountAction,
         AMSDirectorySizeAction
     ]
 
-    def measure(self, project, subproject, ms):
+    def measure(self, project, subproject, tables, ms):
         """
         Returns list of measurements or throws ManualInputRequiredException
+
+        to thi method, it must be provided tables of the database 
 
         ms: list of measuring dictionary with the following fields
             
@@ -27,7 +30,7 @@ class AMS(object):
         """
         res = [] 
         for measurement in ms:
-                res.append(self.getAction(measurement).measure())
+                res.append(self.getAction(measurement).measure(tables))
         return res
 
     def getAction(self, measurement):

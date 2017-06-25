@@ -11,7 +11,7 @@ class TestAMSScriptAction(unittest.TestCase):
             "path": "./test_data/scripts/test.sh",
             "interpreter": "sh"
         })
-        self.assertEqual(a.measure(), 5.0)
+        self.assertEqual(a.measure([]), 5.0)
     
     def test_stdout_with_args(self):
         a = AMSScriptAction("s","script action", {
@@ -19,7 +19,7 @@ class TestAMSScriptAction(unittest.TestCase):
             "interpreter": "sh",
             "args": "5",
         })
-        self.assertEqual(a.measure(), 5.0)
+        self.assertEqual(a.measure([]), 5.0)
     
     def test_file_with_args(self):
         a = AMSScriptAction("s", "script action", {
@@ -28,4 +28,4 @@ class TestAMSScriptAction(unittest.TestCase):
             "args": "/tmp/myfile",
             "result_as": "/tmp/myfile"
         })
-        self.assertEqual(a.measure(), 5.0)
+        self.assertEqual(a.measure([]), 5.0)

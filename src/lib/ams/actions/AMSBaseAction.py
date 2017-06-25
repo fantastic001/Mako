@@ -19,7 +19,7 @@ class AMSBaseAction:
     def getConfig(self):
         return self.cfg 
     
-    def measure(self):
+    def measure(self, tables):
         pass
 
     def toDict(self):
