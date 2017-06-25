@@ -18,10 +18,9 @@ class AMSTableEntryCountAction(AMSBaseAction):
 
     def measure(self, tables):
         table_name = self.getConfig().get("table_name", "")
-        if self.getConfig().get("filter", "") != "":
-            raise NotImplemented("This functionality is not implemented yet")
-        else:
-            for table in tables:
-                if table.getName() == table_name:
-                    return table.getEntryCount()
+        for table in tables:
+            if table.getName() == table_name:
+                if self.getConfig().get("filter", "") != "":
+                    return table.getEntryCount(self.getConfig().get("filter", ""))
+                return table.getEntryCount()
         return 0 
