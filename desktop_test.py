@@ -1,5 +1,6 @@
 
 from src.desktop import * 
+from src.web import * 
 
 import colorama
 import json 
@@ -9,11 +10,36 @@ def short_title(task):
         return task.getText()[:30] + "..."
     return task.getText()
 
+token = None
+service = None
+try:
+    f = open("token", "r")
+    token = f.read()
+    service = MakoDropboxWebService(token)
+    f.close()
+except FileNotFoundError:
+    service = MakoDropboxWebService()
+    url = service.getAuthURL()
+    print("Go to %s and put auth code here" % url)
+    code = input(">>> ").strip()
+    token = service.login(code)
+    f = open("token", "w")
+    f.write(token)
+    f.close()
+    print("Run app again")
+    exit(0)
+
+online_db = MakoWebServiceDatabase(service)
+
 db = MakoDesktopDatabase("/home/stefan/db/")
 db2 = MakoDesktopDatabase("/home/stefan/db2/")
 
-projects = db.downloadProjects()
+projects = online_db.downloadProjects()
+online_db.uploadProjects(projects)
+
 db2.uploadProjects(projects)
+
+
 
 f = open("project.json", "w")
 f.write(json.dumps(projects[0].toDict(), indent=4))
