@@ -1,0 +1,16 @@
+* Specific
+* Measurable
+* Achievable
+* Relevant
+* Time-boxed
+** DONE October 2015
+*** DONE Do Python test on upwork - 2h
+** DONE December 2015
+*** DONE Do django test on UpWork - 2h - 3h
+** DONE July 2016
+*** DONE Find job - 20h - 19h
+** TODO May 2017
+*** DONE Setup payoneer - 1h - 1h
+*** DONE Update UpWork profile including payment system - 1h - 1h
+*** TODO Register to 10 jobs - 1h
+*** TODO Get informed about position and task - 1h

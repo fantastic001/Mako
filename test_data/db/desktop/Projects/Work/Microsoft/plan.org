@@ -1,0 +1,5 @@
+* Specific
+* Measurable
+* Achievable
+* Relevant
+* Time-boxed

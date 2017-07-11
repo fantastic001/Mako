@@ -1,0 +1,6 @@
+{
+    "id": "measureNotes",
+    "action": "filesystem.directory.size",
+    "path": "/data/Documents/Notes/",
+    "description": "Measures size of notes"
+}

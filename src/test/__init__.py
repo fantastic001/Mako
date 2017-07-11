@@ -12,3 +12,4 @@ from .TestMonthReportGenerator import *
 from .TestTable import * 
 from .TestAMSTableEntryCountAction import * 
 from .TestMakoTaskWarriorDatabase import * 
+from .TestMakoDesktopDatabase import * 

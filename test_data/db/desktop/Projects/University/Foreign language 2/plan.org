@@ -1,0 +1,20 @@
+* Specific
+* Measurable
+* Achievable
+* Relevant
+* Time-boxed
+** DONE March 2017
+*** DONE Lecture 1 - 3h - 3h
+*** DONE go to lecture - 3h - 3h
+*** DONE Plan presentation - 3h - 3h
+*** DONE go to lecture - 3h - 3h
+*** DONE Finish presentation - 3h - 3h
+** DONE April 2017
+*** DONE Change presentation and finally select topic - 1h - 1h
+*** DONE Plan content - 2h - 2h
+*** DONE Create presentation - 2h - 2h
+*** DONE Learn speech - 2h - 2h
+*** DONE Do presentation - 3h - 3h
+** DONE May 2017
+*** DONE Read articles and words in the book - 2h - 2h
+*** DONE Read grammar for exam - 2h - 2h
