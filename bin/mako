@@ -158,13 +158,14 @@ def list_tasks(project_name, name, **kw):
         print("Subproject not found")
         return 
     tasks = projects[i].getSubprojects()[j].getAllTasks()
+    k = 1
     for t in tasks:
         text = short_title(t)
         color = colorama.Fore.RED
         if t.isDone():
             color = colorama.Fore.GREEN
-        print("%s\t\t| %s | %s | %s %d \t %d%s" % (color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
-
+        print("%d %s\t\t| %s | %s | %s %d \t %d%s" % (k, color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
+        k += 1
 
 stack.pushCommand("tasks")
 stack.assignAction(list_tasks,"List all tasks for given subproject")
@@ -214,11 +215,15 @@ def delete_task(project_name, name, text):
     if j == -1:
         print("Subproject not found")
         return 
-    tasks = projects[i].getSubprojects()[j].getAllTasks().copy()
-    projects[i].getSubprojects()[j].deleteAllTasks()
-    for task in tasks:
-        if task.getText() != text:
-            projects[i].getSubprojects()[j].addTask(task)
+    if not text.isdigit():
+        tasks = projects[i].getSubprojects()[j].getAllTasks().copy()
+        projects[i].getSubprojects()[j].deleteAllTasks()
+        for task in tasks:
+            if task.getText() != text:
+                projects[i].getSubprojects()[j].addTask(task)
+    else:
+        k = int(text)-1
+        del projects[i].getSubprojects()[j].getAllTasks()[k]
     db.uploadProjects(projects)
 
 stack.pushCommand("delete")
@@ -269,7 +274,11 @@ def mark_task_done(project_name, name, text, **kw):
     if j == -1:
         print("Subproject not found")
         return 
-    get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).setDone()
+    if not text.isdigit():
+        get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).setDone()
+    else:
+        k = int(text)-1
+        projects[i].getSubprojects()[j].getAllTasks()[k].setDone()
     db.uploadProjects(projects)
 stack.pushCommand("done")
 stack.assignAction(mark_task_done, "Mark specified task as done")
@@ -288,7 +297,11 @@ def increase_spent_time(project_name, name, text, dt, **kw):
     if j == -1:
         print("Subproject not found")
         return 
-    get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).increaseSpentTime(dt)
+    if not text.isdigit():
+        get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).increaseSpentTime(dt)
+    else:
+        k = int(text)-1
+        projects[i].getSubprojects()[j].getAllTasks()[k].increaseSpentTime(dt)
     db.uploadProjects(projects)
 
 stack.pushCommand("do")
