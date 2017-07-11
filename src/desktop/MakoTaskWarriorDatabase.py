@@ -39,6 +39,8 @@ class MakoTaskWarriorDatabase(object):
             kv.append(curr)
         d = {}
         for k in kv:
+            if not ":" in k:
+                continue
             key = k.split(":")[0]
             val = k.split(":")[1][1:-1] # we remove quotes
             d[key] = val
@@ -84,7 +86,7 @@ class MakoTaskWarriorDatabase(object):
                     C = ""
                     if due != "":
                         C = "due:\"%s\"" % due
-                    f.write('["descrition":"%s" "project":"%s" %s status:"%s" tags:"%s"]\n' % (description,pname,C, status, tags))
+                    f.write('[description:"%s" project:"%s" %s status:"%s" tags:"%s"]\n' % (description,pname,C, status, tags))
         f.close()
 
     def uploadMeasurementActions(self, actions):
@@ -126,9 +128,10 @@ class MakoTaskWarriorDatabase(object):
         f = open("%s/pending.data" % self.path)
         for line in f:
             d = self.parseLine(line)
-            project = self.getProject(projects, d)
-            subproject = self.getSubproject(project, d)
-            subproject.addTask(self.getTask(d))
+            if d.get("description", "") != "":
+                project = self.getProject(projects, d)
+                subproject = self.getSubproject(project, d)
+                subproject.addTask(self.getTask(d))
         f.close()
         return projects
 
