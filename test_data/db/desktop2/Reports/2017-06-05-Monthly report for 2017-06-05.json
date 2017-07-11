@@ -1,0 +1,12 @@
+{
+    "to_split": [
+        {
+            "project": "Independent learning",
+            "subproject": "Training",
+            "task": "Android snake game with recognition of finger gestures"
+        }
+    ],
+    "expected_time": 132,
+    "date": "2017-06-05",
+    "name": "Monthly report for 2017-06-05"
+}

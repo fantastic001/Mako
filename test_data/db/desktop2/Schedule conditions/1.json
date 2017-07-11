@@ -1,0 +1,6 @@
+{
+	"description": "Events only on weekends",
+	"project_name": "Organization",
+	"subproject_name": "Events",
+	"allowed_days": [5, 6, 7]
+}

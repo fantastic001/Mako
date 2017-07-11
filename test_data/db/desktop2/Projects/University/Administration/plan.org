@@ -1,0 +1,25 @@
+* Specific
+* Measurable
+* Achievable
+* Relevant
+* Time-boxed
+** DONE September 2016
+*** DONE Get index - 1h - 1h
+*** DONE Register for student card - 2h - 3h
+*** DONE Take student card - 2h - 1h
+*** DONE Finish preparations - 25h - 10h
+** DONE October 2016
+*** DONE Make list of needed books - 1h
+*** DONE Buy literature - 4h
+** DONE November 2016
+*** DONE Go to medical checks - 5h - 6h
+** DONE December 2016
+*** DONE Check service for students - 1h - 1h
+** DONE January 2017
+*** DONE Organize, plan and register examinations - 2h - 3h
+** DONE February 2017
+*** DONE Buy books - 1h - 1h
+** DONE April 2017
+*** DONE Exam registration - 1h - 1h
+** TODO May 2017
+*** TODO Go to medical education on university - 2h - 4h

@@ -7,6 +7,7 @@ class TestMakoDesktopDatabase(unittest.TestCase):
     
     def setUp(self):
         self.db = MakoDesktopDatabase("test_data/db/desktop/")
+        self.db2 = MakoDesktopDatabase("test_data/db/desktop2/")
         
     def test_project_download(self):
         projects = self.db.downloadProjects()
@@ -39,3 +40,14 @@ class TestMakoDesktopDatabase(unittest.TestCase):
     def test_download_tables(self):
         a = self.db.downloadTables()
         self.assertEqual(len(a), 1)
+
+    def DUD(self, d, u, d2):
+        a = d()
+        u(a)
+        b = d2()
+        self.assertEqual(len(a), len(b))
+
+
+
+    def test_project_upload(self):
+        self.DUD(self.db.downloadProjects, self.db2.uploadProjects, self.db2.downloadProjects)

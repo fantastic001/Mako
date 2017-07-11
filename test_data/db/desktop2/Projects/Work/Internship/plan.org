@@ -1,0 +1,33 @@
+* Specific
+* Measurable
+* Achievable
+* Relevant
+* Time-boxed
+** DONE October 2016
+*** DONE Make list of available companies - 1h - 1h
+** DONE November 2016
+*** DONE Prepare documentation for Google - 10h - 10h
+*** DONE Send form to Google - 2h - 2h
+*** DONE Organize practice from "Cracking coding interview" - 4h - 4h
+*** DONE CCI chapter 1 - 3h - 3h
+*** DONE CCI chapter 2 - 3h - 3h
+** DONE December 2016
+*** DONE CCI chapter 3 - 3h - 3h
+*** DONE CCI chapter 4 - 3h - 3h
+*** DONE CCI chapter 5 - 3h - 3h
+*** DONE CCI chapter 6 - 3h - 3h
+*** DONE CCI chapter 7 - 3h - 3h
+*** DONE CCI chapter 8 - 3h - 5h
+** DONE January 2017
+*** DONE CCI chapter 9 - 3h - 4h
+*** DONE CCI chapter 10 - 3h - 3h
+*** DONE CCI chapter 11 - 3h - 3h
+*** DONE CCI chapter 12 - 3h - 3h
+** DONE February 2017
+*** DONE CCI chapter 13 - 3h - 3h
+*** DONE CCI chapter 18 - 3h - 3h
+*** DONE CCI chapter 19 - 3h - 3h
+** DONE March 2017
+*** DONE send internship application to Microsoft development center Serbia - 1h - 1h
+*** DONE send application for internship to Facebook - 1h - 1h
+*** DONE send internship application to RenderedText - 2h - 2h
