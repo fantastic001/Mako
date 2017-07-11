@@ -27,7 +27,7 @@ class MakoTaskWarriorDatabase(object):
                 state = 1
                 curr += c
             elif c in "'\"" and state == 1:
-                state == 0
+                state = 0
                 curr += c
             elif c == " " and state == 1:
                 curr = curr + c 
@@ -67,19 +67,24 @@ class MakoTaskWarriorDatabase(object):
         return Task(d.get("description", ""), 1, due=due, done=(d.get("status", "pending")=="completed"))
     
     def uploadProjects(self, projects):
-        f = open("%s/pending.data" % self.path, w)
+        f = open("%s/pending.data" % self.path, "w")
         for project in projects:
-            for subproject in projects.getSubprojects():
+            for subproject in project.getSubprojects():
                 for task in subproject.getAllTasks():
                     status = "pending"
                     if task.isDone():
                         status = "completed"
-                    dt = task.getDueDate() - datetime.datetime(1970,1,1).total_seconds()
-                    due = str(dt)
+                    due = ""
+                    if task.getDueDate() != None:
+                        dt = (task.getDueDate() - datetime.datetime(1970, 1, 1)).total_seconds()
+                        due = str(int(dt))
                     description = task.getText()
-                    project = project.getName()
-                    tags = subproject.getNamme()
-                    f.write('["descrition":"%s" "project":"%s" due:"%s" status:"%s" tags:"%s"]\n' % (description,project,due, status, tags))
+                    pname = project.getName()
+                    tags = subproject.getName()
+                    C = ""
+                    if due != "":
+                        C = "due:\"%s\"" % due
+                    f.write('["descrition":"%s" "project":"%s" %s status:"%s" tags:"%s"]\n' % (description,pname,C, status, tags))
         f.close()
 
     def uploadMeasurementActions(self, actions):
