@@ -29,11 +29,8 @@ class MakoDatabase(object):
 
     def uploadSchedules(self, schedules):
         """
-        schedules: list of tuples where:
+        schedules: list of Schedule objects:
 
-        1. element: date of creation (or None if db does not provide it)
-        2. element: list of all projects 
-        3. element: list of schedule entries
         """
         pass
 
