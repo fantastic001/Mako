@@ -39,6 +39,17 @@ class Schedule(object):
     def getDate(self):
         return self.date
 
+    def removeEntry(self, day, start, duration):
+        """
+        Removes all entries which are scheduled for the specified day between start and start+duration 
+
+        If entry starts at exactly start, it will be removed also but if it starts at start+duration, it won't be removed.
+        """
+        for i in range(len(self.entries)):
+            if day == self.entries[i].getDay():
+                if start <= self.entries[i].getStart() and self.entries[i].getStart() < start+duration:
+                    del self.entries[i]
+
     def toDict(self):
         d = {}
         d["date"] = datetime.datetime.strftime(self.date, "%Y-%m-%d")
