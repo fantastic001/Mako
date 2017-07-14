@@ -14,3 +14,4 @@ from .TestAMSTableEntryCountAction import *
 from .TestMakoTaskWarriorDatabase import * 
 from .TestMakoDesktopDatabase import * 
 from .TestSchedule import * 
+from .TestConfigManager import * 
