@@ -6,8 +6,8 @@ from ..desktop import MakoDesktopDatabase
 class TestMakoDesktopDatabase(unittest.TestCase):
     
     def setUp(self):
-        self.db = MakoDesktopDatabase("test_data/db/desktop/")
-        self.db2 = MakoDesktopDatabase("test_data/db/desktop2/")
+        self.db = MakoDesktopDatabase(path="test_data/db/desktop/")
+        self.db2 = MakoDesktopDatabase(path="test_data/db/desktop2/")
         
     def test_project_download(self):
         projects = self.db.downloadProjects()

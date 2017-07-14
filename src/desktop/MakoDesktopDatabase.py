@@ -14,20 +14,44 @@ from YAPyOrg import *
 
 class MakoDesktopDatabase(MakoDatabase):
 
-    def __init__(self, path):
-        """
-        path: path to the directory where database files are held 
-        """
-        self.path = path
+    def init(self):
+        path = self.getParams()["path"]
+        try:
+            os.mkdir("%s/" % path)
+            os.mkdir("%s/Projects" % path)
+            os.mkdir("%s/Measurements" % path)
+            os.mkdir("%s/Schedules" % path)
+            os.mkdir("%s/Reports" % path)
+            os.mkdir("%s/Tables" % path)
+            os.mkdir("%s/Schedule conditions" % path)
+        except FileExistsError:
+            pass
+
+
+    def validate(self):
+        if not os.path.exists(self.getParams()["path"]):
+            return False 
+        if not os.path.exists("%s/Projects"):
+            return False 
+        if not os.path.exists("%s/Schedules"):
+            return False 
+        if not os.path.exists("%s/Reports"):
+            return False 
+        if not os.path.exists("%s/Tables"):
+            return False 
+        if not os.path.exists("%s/Schedule conditions"):
+            return False 
+        return True
+
 
     def removeFilesSatisfying(self, subdir, func):
-        path = "%s/%s/" % (self.path, subdir)
+        path = "%s/%s/" % (self.getParams()["path"], subdir)
         for name in os.listdir(path):
             if func("%s/%s" % (path, name)):
                 os.remove("%s/%s" % (path, name))
     
     def removeDirectoriesSatisfying(self, subdir, func):
-        path = "%s/%s/" % (self.path, subdir)
+        path = "%s/%s/" % (self.getParams()["path"], subdir)
         for name in os.listdir(path):
             if func("%s/%s" % (path, name)):
                 shutil.rmtree("%s/%s" % (path, name))
@@ -48,7 +72,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def uploadProjects(self, projects):
         self.removeDirectoriesSatisfying("Projects", lambda x: os.path.isdir(x))
-        path = "%s/Projects/" % self.path
+        path = "%s/Projects/" % self.getParams()["path"]
         for p in projects:
             os.mkdir(path + p.getName())
             for sp in p.getSubprojects():
@@ -89,7 +113,7 @@ class MakoDesktopDatabase(MakoDatabase):
         f.close()
 
     def uploadMeasurementActions(self, actions):
-        path = "%s/Measurements/" % self.path
+        path = "%s/Measurements/" % self.getParams()["path"]
         for action in actions:
             in_db = False 
             for name in os.listdir(path):
@@ -114,7 +138,7 @@ class MakoDesktopDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
-        path = "%s/Measurements/" % self.path
+        path = "%s/Measurements/" % self.getParams()["path"]
         for name in os.listdir(path):
             fpath = "%s/%s/data.csv" % (path, name)
             apath =  "%s/%s/measure.json" % (path, name)
@@ -136,15 +160,15 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def uploadSchedules(self, schedules):
         self.removeFilesSatisfying("Schedules", lambda x: x[-5:] == ".json")
-        path = "%s/Schedules" % self.path 
+        path = "%s/Schedules" % self.getParams()["path"] 
         for schedule in schedules:
-            filename="%s/Schedules/%s.json" % (self.path, str(schedule.getDate()))
+            filename="%s/Schedules/%s.json" % (self.getParams()["path"], str(schedule.getDate()))
             f = open(filename, "w")
             f.write(json.dumps(schedule.toDict()))
             f.close()
 
     def uploadReports(self, reports):
-        path = "%s/Reports/" % self.path
+        path = "%s/Reports/" % self.getParams()["path"]
         self.removeFilesSatisfying("Reports", lambda x: x[-5:] == ".json")
         for report in reports:
             f = open("%s/%s.json" % (path,datetime.datetime.strftime(report.getDate(),"%Y-%m-%d-")+report.getName()), "w")
@@ -153,7 +177,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def uploadDefaultConditions(self, conditions):
         self.removeFilesSatisfying("Schedule conditions", lambda x: x[-5:] == ".json")
-        path = "%s/Schedule conditions" % self.path
+        path = "%s/Schedule conditions" % self.getParams()["path"]
         for i in range(len(conditions)):
             condition = conditions[i]
             f = open("%s/%d.json" % (path, i), "w")
@@ -162,7 +186,7 @@ class MakoDesktopDatabase(MakoDatabase):
     
     def uploadTables(self, tables):
         self.removeFilesSatisfying("Tables", lambda x: x[-5:] == ".json")
-        path = "%s/Tables" % self.path
+        path = "%s/Tables" % self.getParams()["path"]
         for i in range(len(tables)):
             table = tables[i]
             f = open("%s/%d.json" % (path, i), "w")
@@ -247,8 +271,8 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadProjects(self):
         res = []
-        for name in os.listdir(self.path + "/Projects/"):
-            path = "%s/Projects/%s/" % (self.path, name)
+        for name in os.listdir(self.getParams()["path"] + "/Projects/"):
+            path = "%s/Projects/%s/" % (self.getParams()["path"], name)
             if os.path.isdir(path):
                 project = ScheduleProject(name, self.readBackground(path), self.readForeground(path))
                 subprojects = self.readSubprojects(path)
@@ -259,7 +283,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadMeasurementActions(self):
         res = []
-        path = "%s/Measurements/" % self.path
+        path = "%s/Measurements/" % self.getParams()["path"]
         for name in os.listdir(path):
             fpath = "%s/%s/measure.json" % (path, name)
             if os.path.isfile(fpath):
@@ -280,7 +304,7 @@ class MakoDesktopDatabase(MakoDatabase):
         second element is value 
         """
         res = []
-        path = "%s/Measurements/" % self.path
+        path = "%s/Measurements/" % self.getParams()["path"]
         for name in os.listdir(path):
             fpath = "%s/%s/data.csv" % (path, name)
             apath =  "%s/%s/measure.json" % (path, name)
@@ -311,7 +335,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadSchedules(self):
         res = [] 
-        path = "%s/Schedules/" % self.path 
+        path = "%s/Schedules/" % self.getParams()["path"] 
         sff_list = os.listdir(path)
         for name in sff_list:
             if os.path.isfile("%s/%s"% (path, name)) and name[-5:] == ".json":
@@ -325,7 +349,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadReports(self):
         res = []
-        path = "%s/Reports/" % self.path 
+        path = "%s/Reports/" % self.getParams()["path"] 
         for name in os.listdir(path):
             if name[-5:] == ".json":
                 f = open("%s/%s" % (path, name))
@@ -338,7 +362,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadDefaultConditions(self):
         res = []
-        path = "%s/Schedule conditions/" % self.path
+        path = "%s/Schedule conditions/" % self.getParams()["path"]
         for name in os.listdir(path):
             if name[-5:] == ".json":
                 f = open("%s/%s" % (path, name))
@@ -348,7 +372,7 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def downloadTables(self):
         res = [] 
-        path = "%s/Tables/" % self.path
+        path = "%s/Tables/" % self.getParams()["path"]
         for name in os.listdir(path):
             if name[-5:] == ".json":
                 f = open("%s/%s" % (path, name))

@@ -5,6 +5,20 @@ from ..ams.actions import *
 from ..ams import * 
 
 class MakoDatabase(object):
+    
+    def __init__(self, **params):
+        self.params = params
+        if not self.validate():
+            self.init()
+
+    def getParams(self):
+        return self.params
+
+    def init(self):
+        pass
+
+    def validate(self):
+        pass
 
     def uploadProjects(self, projects):
         pass

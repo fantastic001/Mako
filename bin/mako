@@ -91,7 +91,7 @@ def delete_subproject(project_name, name, **kw):
             projects[i].addSubproject(sp)
     db.uploadProjects(projects)
 
-db = MakoDesktopDatabase("%s/.mako/db" % os.environ["HOME"])
+db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
 
 stack.pushCommand("projects")
 stack.assignAction(list_projects, "Lists all projects")

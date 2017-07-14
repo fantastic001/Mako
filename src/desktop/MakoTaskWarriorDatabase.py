@@ -6,14 +6,15 @@ import os
 
 import datetime
 
-class MakoTaskWarriorDatabase(object):
+class MakoTaskWarriorDatabase(MakoDatabase):
 
-    def __init__(self, path="%s/.task/" % os.environ["HOME"]):
-        """
-        path: path to the taskwarrior directory
-        """
-        self.path = path
     
+    def init(self):
+        pass
+
+    def validate(self):
+        return True
+
     def parseLine(self, line):
         line = line[1:-1]
         kv = []
@@ -69,7 +70,7 @@ class MakoTaskWarriorDatabase(object):
         return Task(d.get("description", ""), 1, due=due, done=(d.get("status", "pending")=="completed"))
     
     def uploadProjects(self, projects):
-        f = open("%s/pending.data" % self.path, "w")
+        f = open("%s/pending.data" % self.getParams()["path"], "w")
         for project in projects:
             for subproject in project.getSubprojects():
                 for task in subproject.getAllTasks():
@@ -125,7 +126,7 @@ class MakoTaskWarriorDatabase(object):
     
     def downloadProjects(self):
         projects = [] 
-        f = open("%s/pending.data" % self.path)
+        f = open("%s/pending.data" % self.getParams()["path"])
         for line in f:
             d = self.parseLine(line)
             if d.get("description", "") != "":

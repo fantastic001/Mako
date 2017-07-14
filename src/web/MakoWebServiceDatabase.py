@@ -9,21 +9,22 @@ from ..lib.table import *
 
 class MakoWebServiceDatabase(MakoDatabase):
 
-    def __init__(self, webservice):
-        """
-        webservice: object of class which implements MakoWebService
-        """
-        self.webservice = webservice
+    def init(self):
+        pass
+
+    def validate(self):
+        return True
+
 
     def uploadList(self, identifier, items):
         d = {}
         d[identifier] = [] 
         for item in items:
             d[identifier].append(item.toDict())
-        self.webservice.uploadData(identifier, json.dumps(d,  indent=4))
+        self.getParams()["webservice"].uploadData(identifier, json.dumps(d,  indent=4))
 
     def downloadList(self, identifier, typeOfObject):
-        data = self.webservice.downloadData(identifier)
+        data = self.getParams()["webservice"].downloadData(identifier)
         d = json.loads(data)
         items = d[identifier]
         res = [] 
@@ -47,7 +48,7 @@ class MakoWebServiceDatabase(MakoDatabase):
         sss = ""
         for line in data:
             sss += datetime.datetime.strftime(line[0], "%d.%m.%Y.") + "," + str(line[1]) + "\n"
-        self.webservice.uploadData("%s-DATA" % action_id, sss)
+        self.getParams()["webservice"].uploadData("%s-DATA" % action_id, sss)
 
     def uploadData(self, data):
         """
@@ -71,7 +72,7 @@ class MakoWebServiceDatabase(MakoDatabase):
         return self.downloadList("projects", ScheduleProject)
 
     def downloadMeasurementActions(self):
-        data = self.webservice.downloadData("metrics")
+        data = self.getParams()["webservice"].downloadData("metrics")
         ams = AMS()
         res = []
         d = jon.loads(data)
@@ -86,7 +87,7 @@ class MakoWebServiceDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
-        data = self.webservice.downloadData("%s-DATA" % action_id)
+        data = self.getParams()["webservice"].downloadData("%s-DATA" % action_id)
         res = [] 
         for line in data.split("\n"):
             date_str = line.split(",")[0]
