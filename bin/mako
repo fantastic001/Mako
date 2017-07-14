@@ -430,6 +430,21 @@ def print_schedule(**kw):
 stack.assignAction(print_schedule, "Show lastly created schedule")
 stack.pushCommand("show")
 stack.assignAction(print_schedule, "Show lastly created schedule")
+stack.pop()
+
+def delete_schedule_entry(day, start, duration, **kw):
+    introduce("Deleting entry from last schedule")
+    schedules = sorted(db.downloadSchedules(), key=key_operator)
+    schedules[-1].removeEntry(int(day), int(start), int(duration))
+    show_schedule(schedules[-1])
+    db.uploadSchedules(schedules)
+
+stack.pushCommand("remove")
+stack.pushVariable("day")
+stack.pushVariable("start")
+stack.pushVariable("duration")
+stack.assignAction(delete_schedule_entry, "Delete all entries on specified day which start at start and end before start+duration")
+
 
 stack.popAll()
 
