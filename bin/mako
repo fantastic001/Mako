@@ -16,6 +16,13 @@ import colorama
 
 stack = ArgumentStack()
 
+try:
+    os.mkdir("%s/.mako/" % os.environ["HOME"])
+except FileExistsError:
+    pass
+
+db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
+
 def introduce(name):
     print("%s:" % name)
     print("_________________")
@@ -90,8 +97,6 @@ def delete_subproject(project_name, name, **kw):
         if sp.getName() != name:
             projects[i].addSubproject(sp)
     db.uploadProjects(projects)
-
-db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
 
 stack.pushCommand("projects")
 stack.assignAction(list_projects, "Lists all projects")
