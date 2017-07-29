@@ -33,7 +33,7 @@ def list_projects(**kw):
     for project in projects:
         print(project.getName())
 
-def add_project(name="", bg="", fg=""):
+def add_project(name="", bg="ffffff", fg="000000"):
     introduce("Adding project %s" % name)
     projects = db.downloadProjects()
     projects.append(ScheduleProject(name, (255, 0, 0), (255,255,255)))
@@ -106,8 +106,6 @@ stack.pop()
 
 stack.pushCommand("add")
 stack.pushVariable("name")
-stack.pushVariable("bg")
-stack.pushVariable("fg")
 stack.assignAction(add_project, "Add new projects. Colors are specified in hexadecimal manner like ffffff for white.")
 stack.pop()
 stack.pop()
