@@ -7,7 +7,11 @@ import os
 import datetime
 
 class MakoTaskWarriorDatabase(MakoDatabase):
+    """
+    Params to constructor:
 
+    path: path to taskwarrior database 
+    """
     
     def init(self):
         pass

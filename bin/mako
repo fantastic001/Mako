@@ -736,6 +736,17 @@ stack.assignAction(import_json, "Import database contained in JSON file")
 stack.pop()
 stack.pop()
 
+def import_taskwarrior(path, **kw):
+    introduce("Importing database from taskwarrior")
+    twdb = MakoTaskWarriorDatabase(path)
+    projects = twdb.downloadProjects()
+    db.uploadProjects(projects)
+stack.pushCommand("taskwarrior")
+stack.pushVariable("path")
+stack.assignAction(import_taskwarrior, "Import data from task warrior database") 
+stack.pop()
+stack.pop()
+
 stack.popAll()
 stack.pushCommand("help")
 stack.assignAction(lambda: print(stack.getHelp()), "Get help")

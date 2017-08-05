@@ -14,6 +14,12 @@ from YAPyOrg import *
 
 class MakoDesktopDatabase(MakoDatabase):
 
+    """
+    Params to constructor:
+
+    path: path to the db 
+    """
+
     def init(self):
         path = self.getParams()["path"]
         try:
