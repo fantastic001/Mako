@@ -397,15 +397,18 @@ def add_entry(day, time, duration, project_name, subproject_name, **kw):
     if j == -1:
         print("Subproject not found")
         return 
-    schedules[-1].addEntry(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
-    errors = schedules[-1].check()
-    if len(errors) > 0:
-        print("Conditins not satisfied:")
-        for error in errors:
-            print(error[1].getDescription())
-        return 
-    db.uploadSchedules(schedules)
-    show_schedule(schedules[-1])
+    try:
+        schedules[-1].addEntry(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
+        errors = schedules[-1].check()
+        if len(errors) > 0:
+            print("Conditins not satisfied:")
+            for error in errors:
+                print(error[1].getDescription())
+            return 
+        db.uploadSchedules(schedules)
+        show_schedule(schedules[-1])
+    except IndexError:
+        print("No schedules to add entry to")
 
 
 stack.pushCommand("add")
@@ -425,10 +428,13 @@ stack.pop()
 def print_schedule(**kw):
     introduce("Showing last schedule")
     schedules = sorted(db.downloadSchedules(), key=key_operator)
-    show_schedule(schedules[-1])
-    print("Conditions:")
-    for cond in schedules[-1].getConditions():
-        print(cond.getDescription())
+    try:
+        show_schedule(schedules[-1])
+        print("Conditions:")
+        for cond in schedules[-1].getConditions():
+            print(cond.getDescription())
+    except IndexError:
+        print("There's no schedule to show.")
 
 stack.assignAction(print_schedule, "Show lastly created schedule")
 stack.pushCommand("show")
@@ -438,9 +444,12 @@ stack.pop()
 def delete_schedule_entry(day, start, duration, **kw):
     introduce("Deleting entry from last schedule")
     schedules = sorted(db.downloadSchedules(), key=key_operator)
-    schedules[-1].removeEntry(int(day), int(start), int(duration))
-    show_schedule(schedules[-1])
-    db.uploadSchedules(schedules)
+    try:
+        schedules[-1].removeEntry(int(day), int(start), int(duration))
+        show_schedule(schedules[-1])
+        db.uploadSchedules(schedules)
+    except IndexError:
+        print("No available schedule found.")
 
 stack.pushCommand("remove")
 stack.pushVariable("day")
