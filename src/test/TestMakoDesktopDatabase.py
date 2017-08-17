@@ -71,3 +71,14 @@ class TestMakoDesktopDatabase(unittest.TestCase):
         
     def test_upload_tables(self):
         self.DUD(self.db.downloadTables, self.db2.uploadTables, self.db2.downloadTables)
+
+    def test_custom_due_dates(self):
+        projects = self.db.downloadProjects()
+        for project in projects:
+            if project.getName() == "Work":
+                for subproject in project.getSubprojects():
+                    if subproject.getName() == "Google":
+                        tasks = subproject.getAllTasks()
+                        self.assertEqual(tasks[0].getDueDate().day, 5)
+                        self.assertEqual(tasks[0].getDueDate().month, 1)
+                        self.assertEqual(tasks[0].getDueDate().year, 2017)

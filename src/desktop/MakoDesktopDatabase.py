@@ -7,6 +7,7 @@ from ..lib.table import *
 
 import os 
 import os.path
+import datetime
 from datetime import date 
 import shutil
 
@@ -64,6 +65,9 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def makeTaskElement(self, t):
         text = t.getText()
+        due = t.getDueDate()
+        if due.day != 28:
+            text = "[%s] %s" % (datetime.datetime.strftime(due, "%Y-%m-%d"), text)
         done = t.isDone()
         expected = t.getExpectedTime()
         spent = t.getSpentTime()
@@ -232,6 +236,13 @@ class MakoDesktopDatabase(MakoDatabase):
 
     def parseTask(self, element, last):
         title = element.getTitle()
+        due = None
+        if title.split(" ")[0][0] == "[":
+            rest = " ".join(title.split(" ")[1:])
+            due = datetime.datetime.strptime(title.split(" ")[0], "[%Y-%m-%d]")
+            title = rest
+        else:
+            due = last 
         elems = title.split(" - ")
         desc = elems[0]
         expected = 0
@@ -242,7 +253,7 @@ class MakoDesktopDatabase(MakoDatabase):
                 spent = int(elems[-1][:-1])
             else:
                 expected = int(elems[-1][:-1])
-        return Task(desc, expected, spent, element.isDONE(), last)
+        return Task(desc, expected, spent, element.isDONE(), due)
 
     def readSubprojects(self, path):
         res = []
