@@ -249,10 +249,10 @@ class MakoDesktopDatabase(MakoDatabase):
         spent = 0
         if len(elems) > 1:
             if len(elems) >= 3:
-                expected = int(elems[-2][:-1])
-                spent = int(elems[-1][:-1])
+                expected = int(elems[-2].strip()[:-1])
+                spent = int(elems[-1].strip()[:-1])
             else:
-                expected = int(elems[-1][:-1])
+                expected = int(elems[-1].strip()[:-1])
         return Task(desc, expected, spent, element.isDONE(), due)
 
     def readSubprojects(self, path):
