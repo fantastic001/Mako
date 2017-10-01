@@ -14,7 +14,7 @@ import sys
 import os 
 import colorama
 
-stack = ArgumentStack()
+stack = ArgumentStack(error_msg="Wrong option. Run 'mako help' to see available options.")
 
 try:
     os.mkdir("%s/.mako/" % os.environ["HOME"])
