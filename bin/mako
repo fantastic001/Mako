@@ -508,6 +508,12 @@ class MonthCLIReportView(ReportView):
         for task in report.getField("to_split"):
             l.append([task["project"], task["subproject"], task["task"]])
         show_tabular(l, 30)
+        print()
+        print("Expected time this month for each project")
+        l = [["Project name", "Expected time this month"]]
+        for p in report.getField("expected_per_project"):
+            l.append([p["project"], str(p["time"]) + "h"])
+        show_tabular(l, 30)
 
 def generate_month(month, year, **kw):
     introduce("Generating report")
