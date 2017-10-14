@@ -15,3 +15,4 @@ from .TestMakoTaskWarriorDatabase import *
 from .TestMakoDesktopDatabase import * 
 from .TestSchedule import * 
 from .TestConfigManager import * 
+from .TestMakoMemoryDatabase import * 

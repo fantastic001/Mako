@@ -178,8 +178,6 @@ class MakoDatabase(object):
 
         This method also does validation and initialization of ndatabase 'db' if needed
         """
-        if not db.validate():
-            db.init()
         db.uploadProjects(self.downloadProjects())
         actions = self.downloadMeasurementActions()
         db.uploadMeasurementActions(actions)
