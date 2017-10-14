@@ -331,16 +331,11 @@ class MakoDesktopDatabase(MakoDatabase):
             f.close()
             if os.path.isfile(fpath) and action.getIdentifier() == action_id:
                 f = open(fpath)
-                header = True
                 for line in f:
-                    if header:
-                        header = False 
-                        continue
-                    else:
-                        date_str = line.split(",")[0]
-                        val = float(line.split(",")[1])
-                        d = datetime.datetime.strptime(date_str, "%d.%m.%Y.")
-                        res.append((d, val))
+                    date_str = line.split(",")[0]
+                    val = float(line.split(",")[1])
+                    d = datetime.datetime.strptime(date_str, "%d.%m.%Y.")
+                    res.append((d, val))
         return res
 
     def downloadData(self):

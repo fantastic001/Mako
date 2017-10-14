@@ -171,3 +171,22 @@ class MakoDatabase(object):
         for table in d["tables"]:
             tables.append(Table.fromDict(table))
         self.uploadTables(tables)
+
+    def export(self, db):
+        """
+        Exports data from current datatbase to database in argument 'db'
+
+        This method also does validation and initialization of ndatabase 'db' if needed
+        """
+        if not db.validate():
+            db.init()
+        db.uploadProjects(self.downloadProjects())
+        actions = self.downloadMeasurementActions()
+        db.uploadMeasurementActions(actions)
+        for action in actions:
+            db.uploadMeasurementData(action.getIdentifier(), self.downloadMeasurementData(action.getIdentifier()))
+        db.uploadData(self.downloadData())
+        db.uploadSchedules(self.downloadSchedules())
+        db.uploadTables(self.downloadTables())
+        db.uploadReports(self.downloadReports())
+        db.uploadDefaultConditions(self.downloadDefaultConditions())

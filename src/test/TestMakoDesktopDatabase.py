@@ -3,11 +3,14 @@ import unittest
 
 from ..desktop import MakoDesktopDatabase
 
+import shutil
+
 class TestMakoDesktopDatabase(unittest.TestCase):
     
     def setUp(self):
         self.db = MakoDesktopDatabase(path="test_data/db/desktop/")
         self.db2 = MakoDesktopDatabase(path="test_data/db/desktop2/")
+        self.db3 = MakoDesktopDatabase(path="test_data/db/desktop3/")
         
     def test_project_download(self):
         projects = self.db.downloadProjects()
@@ -59,7 +62,7 @@ class TestMakoDesktopDatabase(unittest.TestCase):
         data = self.db.downloadMeasurementData("measureNotes")
         self.db2.uploadMeasurementData("measureNotes", data)
         data2 = self.db2.downloadMeasurementData("measureNotes")
-        self.assertEqual(len(data), len(data2)+1)
+        self.assertEqual(len(data), len(data2))
     def test_upload_reports(self):
         self.DUD(self.db.downloadReports, self.db2.uploadReports, self.db2.downloadReports)
 
@@ -71,6 +74,16 @@ class TestMakoDesktopDatabase(unittest.TestCase):
         
     def test_upload_tables(self):
         self.DUD(self.db.downloadTables, self.db2.uploadTables, self.db2.downloadTables)
+
+    def test_export(self):
+        self.db.export(self.db3)
+        projects1 = self.db.downloadProjects()
+        projects2 = self.db3.downloadProjects()
+        self.assertEqual(len(projects1), len(projects2))
+        for i in range(len(projects1)):
+            self.assertEqual(projects1[i].getName(), projects2[i].getName())
+        self.assertEqual(self.db.downloadMeasurementData("measureNotes"), self.db3.downloadMeasurementData("measureNotes"))
+        shutil.rmtree("test_data/db/desktop3/")
 
     def test_custom_due_dates(self):
         projects = self.db.downloadProjects()
