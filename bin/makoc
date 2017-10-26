@@ -1,0 +1,59 @@
+#!python
+
+from mako.lib.schedule import * 
+from mako.lib.ams import * 
+from mako.lib.reporting import * 
+from mako.lib.reporting.month import * 
+from mako.lib.reporting.quarter import * 
+from mako.lib.table import * 
+from mako.desktop import * 
+
+import sys
+import os 
+
+from easy_widgets import * 
+
+mem = MakoMemoryDatabase(frequency=0, db=MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"]))
+
+Application.addColor("task", "dark red", "")
+Application.addColor("task_done", "dark green", "")
+
+Application.init()
+
+main = Menu("Mako main menu")
+
+
+def task_list(x):
+    menu = Menu("Tasks")
+    projects = mem.downloadProjects()
+    for project in projects:
+        def inner_project(x):
+            smenu = Menu("Subprojects")
+            for subproject in project.getSubprojects():
+                def inner(x):
+                    tasksmenu = Menu("Tasks")
+                    for task in subproject.getAllTasks():
+                        if task.isDone():
+                            tasksmenu.addOption(task.getText(), lambda x: 0, "task_done")
+                        else:
+                            tasksmenu.addOption(task.getText(), lambda x: 0, "task")
+                    tasksmenu.show()
+                smenu.addOption(subproject.getName(), inner)
+            smenu.show()
+        menu.addOption(project.getName(), inner_project)
+    menu.show()
+
+
+
+
+main.addOption("Show schedule", lambda x: Application.exit())
+main.addOption("Projects", task_list)
+main.addOption("Tables", lambda x: Application.exit())
+main.addOption("Reports", lambda x: Application.exit())
+main.addOption("Measurements", lambda x: Application.exit())
+main.addOption("Measure progress for every project", lambda x: Application.exit())
+main.show()
+
+Application.run()
+
+mem.save()

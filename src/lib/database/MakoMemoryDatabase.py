@@ -121,3 +121,6 @@ class MakoMemoryDatabase(MakoDatabase):
 
     def downloadTables(self):
         return self.tables
+
+    def save(self):
+        self.export(self.db)
