@@ -11,6 +11,9 @@ from mako.desktop import *
 import sys
 import os 
 
+
+import datetime 
+
 from easy_widgets import * 
 
 mem = MakoMemoryDatabase(frequency=0, db=MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"]))
@@ -23,20 +26,117 @@ Application.init()
 main = Menu("Mako main menu")
 
 
+
+
+def do_task(i,j,k):
+    projects = mem.downloadProjects()
+    projects[i].getSubprojects()[j].getAllTasks(k).increaseSpentTime(1)
+    mem.uploadProjects(projects)
+    subproject_menu(i,j)
+
+
+def delete_task(i,j,k):
+    projects = mem.downloadProjects()
+    tasks = projects[i].getSubprojects()[j].getAllTasks().copy()
+    projects[i].getSubprojects()[j].deleteAllTasks()
+    for f in range(len(tasks)):
+        if f != k:
+            projects[i].getSubprojects()[j].addTask(tasks[f])
+    mem.uploadProjects(projects)
+    subproject_menu(i,j)
+
+def mark_task_done(i,j,k):
+    projects = mem.downloadProjects()
+    projects[i].getSubprojects()[j].getAllTasks()[k].setDone()
+    mem.uploadProjects(projects)
+    subproject_menu(i,j)
+
+def task_menu(i,j,k):
+    task = mem.downloadProjects()[i].getSubprojects()[j].getAllTasks()[k]
+    menu = MenuBox(task.getText())
+    if not task.isDone():
+        menu.addOption("Mark task as done", lambda x: mark_task_done(i,j,k))
+        menu.addOption("Increase spent time on task", lambda x: do_task(i,j,k))
+    menu.addOption("Delete", lambda x: delete_task(i,j,k))
+    menu.exec()
+
+def add_task(i,j):
+    def f(name):
+        def g(t):
+            def h(due):
+                due = datetime.datetime.strptime(due, "%Y-%m-%d")
+                expected = int(t)
+                projects = mem.downloadProjects()
+                projects[i].getSubprojects()[j].addTask(Task(name, expected, due=due))
+                mem.uploadProjects(projects)
+                subproject_menu(i,j)
+            TextInput("Enter due date", h).show()
+        TextInput("Enter expected number of hours", g).show()
+    TextInput("Task name", f).show()
+
+def subproject_menu(i,j):
+    subproject = mem.downloadProjects()[i].getSubprojects()[j]
+    menu = Menu(subproject.getName())
+    menu.addOption("Add new task", lambda x: add_task(i,j))
+    for k in range(len(subproject.getAllTasks())):
+        task = subproject.getAllTasks()[k]
+        color = "task"
+        if task.isDone():
+            color = "task_done"
+        menu.addOption("%s | %s | %d | %d" % (task.getText(), str(task.getDueDate()), task.getExpectedTime(), task.getSpentTime()), lambda x: task_menu(i,j,k), color)
+    menu.show()
+
+def add_subproject():
+    pass
+
+def project_menu(i):
+    project = mem.downloadProjects()[i]
+    menu = Menu(project.getName())
+    menu.addOption("Add new subproject", lambda x: add_subproject(i))
+    for j in range(len(project.getSubprojects())):
+        menu.addOption(project.getSubprojects()[j].getName(), lambda x: subproject_menu(i,j))
+    menu.show()
+
+def list_projects():
+    projects = mem.downloadProjects()
+    menu = Menu("Projects")
+    for i in range(len(projects)):
+        menu.addOption(projects[i].getName(), lambda x: project_menu(i))
+    menu.show()
+
 def task_list(x):
     menu = Menu("Tasks")
     projects = mem.downloadProjects()
-    for project in projects:
+    for i in range(len(projects)):
+        project = projects[i]
         def inner_project(x):
             smenu = Menu("Subprojects")
-            for subproject in project.getSubprojects():
+            for j in range(len(project.getSubprojects())):
+                subproject = project.getSubprojects()[j]
                 def inner(x):
                     tasksmenu = Menu("Tasks")
-                    for task in subproject.getAllTasks():
+                    for k in range(len(subproject.getAllTasks())):
+                        task = subproject.getAllTasks()[k]
+                        def open_options(x):
+                            optmenu = MenuBox("Task: %s" % task.getText())
+                            if not task.isDone():
+                                def set_done(x):
+                                    task.setDone()
+                                    mem.uploadProjects(projects)
+                                    inner(x)
+                                optmenu.addOption("Mark as done", set_done)
+                                def increase_time(x):
+                                    task.increaseSpentTime(1)
+                                    mem.uploadProjects(projects)
+                                    inner(x)
+                                optmenu.addOption("Increase time", increase_time)
+                            optmenu.addOption("Cancel", lambda x: optmenu.exit())
+                            optmenu.exec()
+                        text = "%s | %d | %s" % (task.getText(), task.getSpentTime(), str(task.getDueDate))
                         if task.isDone():
-                            tasksmenu.addOption(task.getText(), lambda x: 0, "task_done")
+                            tasksmenu.addOption(text, open_options, "task_done")
                         else:
-                            tasksmenu.addOption(task.getText(), lambda x: 0, "task")
+                            tasksmenu.addOption(text, open_options, "task")
                     tasksmenu.show()
                 smenu.addOption(subproject.getName(), inner)
             smenu.show()
@@ -47,7 +147,7 @@ def task_list(x):
 
 
 main.addOption("Show schedule", lambda x: Application.exit())
-main.addOption("Projects", task_list)
+main.addOption("Projects", lambda x:list_projects())
 main.addOption("Tables", lambda x: Application.exit())
 main.addOption("Reports", lambda x: Application.exit())
 main.addOption("Measurements", lambda x: Application.exit())
