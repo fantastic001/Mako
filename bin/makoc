@@ -114,10 +114,8 @@ def list_projects(b, params):
 
 # END Projects submenu ###########################################
 
-
 def main():
     menu = Menu("Mako main menu")
-    menu.addOption("Show schedule", lambda x, p: Application.exit())
     menu.addOption("Projects", list_projects)
     menu.addOption("Tables", lambda x,p: Application.exit())
     menu.addOption("Reports", lambda x,p: Application.exit())
