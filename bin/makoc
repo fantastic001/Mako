@@ -23,6 +23,8 @@ Application.addColor("task_done", "dark green", "")
 
 Application.init()
 
+# Projects submenu ###########################################
+
 def do_task(b, params):
     i,j,k = params
     projects = mem.downloadProjects()
@@ -110,6 +112,7 @@ def list_projects(b, params):
         menu.addOption(projects[i].getName(), project_menu, params=[i])
     menu.show()
 
+# END Projects submenu ###########################################
 
 
 def main():
