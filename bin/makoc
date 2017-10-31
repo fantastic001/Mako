@@ -110,44 +110,6 @@ def list_projects(b, params):
         menu.addOption(projects[i].getName(), project_menu, params=[i])
     menu.show()
 
-def task_list(x):
-    menu = Menu("Tasks")
-    projects = mem.downloadProjects()
-    for i in range(len(projects)):
-        project = projects[i]
-        def inner_project(x):
-            smenu = Menu("Subprojects")
-            for j in range(len(project.getSubprojects())):
-                subproject = project.getSubprojects()[j]
-                def inner(x):
-                    tasksmenu = Menu("Tasks")
-                    for k in range(len(subproject.getAllTasks())):
-                        task = subproject.getAllTasks()[k]
-                        def open_options(x):
-                            optmenu = MenuBox("Task: %s" % task.getText())
-                            if not task.isDone():
-                                def set_done(x):
-                                    task.setDone()
-                                    mem.uploadProjects(projects)
-                                    inner(x)
-                                optmenu.addOption("Mark as done", set_done)
-                                def increase_time(x):
-                                    task.increaseSpentTime(1)
-                                    mem.uploadProjects(projects)
-                                    inner(x)
-                                optmenu.addOption("Increase time", increase_time)
-                            optmenu.addOption("Cancel", lambda x: optmenu.exit())
-                            optmenu.exec()
-                        text = "%s | %d | %s" % (task.getText(), task.getSpentTime(), str(task.getDueDate))
-                        if task.isDone():
-                            tasksmenu.addOption(text, open_options, "task_done")
-                        else:
-                            tasksmenu.addOption(text, open_options, "task")
-                    tasksmenu.show()
-                smenu.addOption(subproject.getName(), inner)
-            smenu.show()
-        menu.addOption(project.getName(), inner_project)
-    menu.show()
 
 
 def main():
