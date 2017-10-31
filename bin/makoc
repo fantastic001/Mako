@@ -23,19 +23,16 @@ Application.addColor("task_done", "dark green", "")
 
 Application.init()
 
-main = Menu("Mako main menu")
-
-
-
-
-def do_task(i,j,k):
+def do_task(b, params):
+    i,j,k = params
     projects = mem.downloadProjects()
     projects[i].getSubprojects()[j].getAllTasks(k).increaseSpentTime(1)
     mem.uploadProjects(projects)
-    subproject_menu(i,j)
+    subproject_menu(b, [i,])
 
 
-def delete_task(i,j,k):
+def delete_task(b, params):
+    i,j,k = params
     projects = mem.downloadProjects()
     tasks = projects[i].getSubprojects()[j].getAllTasks().copy()
     projects[i].getSubprojects()[j].deleteAllTasks()
@@ -43,24 +40,28 @@ def delete_task(i,j,k):
         if f != k:
             projects[i].getSubprojects()[j].addTask(tasks[f])
     mem.uploadProjects(projects)
-    subproject_menu(i,j)
+    subproject_menu(b, [i,j])
 
-def mark_task_done(i,j,k):
+def mark_task_done(b, params):
+    i,j,k = params
     projects = mem.downloadProjects()
     projects[i].getSubprojects()[j].getAllTasks()[k].setDone()
     mem.uploadProjects(projects)
-    subproject_menu(i,j)
+    subproject_menu(b, [i,j])
 
-def task_menu(i,j,k):
+def task_menu(b, params):
+    i,j,k = params
     task = mem.downloadProjects()[i].getSubprojects()[j].getAllTasks()[k]
     menu = MenuBox(task.getText())
+    menu.addOption("Cancel", subproject_menu, params=[i,j])
     if not task.isDone():
-        menu.addOption("Mark task as done", lambda x: mark_task_done(i,j,k))
-        menu.addOption("Increase spent time on task", lambda x: do_task(i,j,k))
-    menu.addOption("Delete", lambda x: delete_task(i,j,k))
+        menu.addOption("Mark task as done", mark_task_done, params=[i,j,k])
+        menu.addOption("Increase spent time on task", do_task, params=[i,j,k])
+    menu.addOption("Delete", delete_task, params=[i,j,k])
     menu.exec()
 
-def add_task(i,j):
+def add_task(b, params):
+    i,j = params
     def f(name):
         def g(t):
             def h(due):
@@ -69,39 +70,44 @@ def add_task(i,j):
                 projects = mem.downloadProjects()
                 projects[i].getSubprojects()[j].addTask(Task(name, expected, due=due))
                 mem.uploadProjects(projects)
-                subproject_menu(i,j)
+                subproject_menu(b, [i,j])
             TextInput("Enter due date", h).show()
         TextInput("Enter expected number of hours", g).show()
     TextInput("Task name", f).show()
 
-def subproject_menu(i,j):
+def subproject_menu(b, params):
+    i,j = params
     subproject = mem.downloadProjects()[i].getSubprojects()[j]
     menu = Menu(subproject.getName())
-    menu.addOption("Add new task", lambda x: add_task(i,j))
+    menu.addOption("Back", project_menu, params=[i])
+    menu.addOption("Add new task", add_task, params=[i,j])
     for k in range(len(subproject.getAllTasks())):
         task = subproject.getAllTasks()[k]
         color = "task"
         if task.isDone():
             color = "task_done"
-        menu.addOption("%s | %s | %d | %d" % (task.getText(), str(task.getDueDate()), task.getExpectedTime(), task.getSpentTime()), lambda x: task_menu(i,j,k), color)
+        menu.addOption("%s | %s | %d | %d" % (task.getText(), str(task.getDueDate()), task.getExpectedTime(), task.getSpentTime()), task_menu, color, params=[i,j,k])
     menu.show()
 
-def add_subproject():
+def add_subproject(b, params):
     pass
 
-def project_menu(i):
+def project_menu(b, params):
+    i = params[0]
     project = mem.downloadProjects()[i]
     menu = Menu(project.getName())
-    menu.addOption("Add new subproject", lambda x: add_subproject(i))
+    menu.addOption("Add new subproject", add_subproject, params=[i])
+    menu.addOption("Back", list_projects)
     for j in range(len(project.getSubprojects())):
-        menu.addOption(project.getSubprojects()[j].getName(), lambda x: subproject_menu(i,j))
+        menu.addOption(project.getSubprojects()[j].getName(), subproject_menu, params=[i,j])
     menu.show()
 
-def list_projects():
+def list_projects(b, params):
     projects = mem.downloadProjects()
     menu = Menu("Projects")
+    menu.addOption("Back", lambda b,p: main())
     for i in range(len(projects)):
-        menu.addOption(projects[i].getName(), lambda x: project_menu(i))
+        menu.addOption(projects[i].getName(), project_menu, params=[i])
     menu.show()
 
 def task_list(x):
@@ -144,15 +150,18 @@ def task_list(x):
     menu.show()
 
 
+def main():
+    menu = Menu("Mako main menu")
+    menu.addOption("Show schedule", lambda x, p: Application.exit())
+    menu.addOption("Projects", list_projects)
+    menu.addOption("Tables", lambda x,p: Application.exit())
+    menu.addOption("Reports", lambda x,p: Application.exit())
+    menu.addOption("Measurements", lambda x,p: Application.exit())
+    menu.addOption("Measure progress for every project", lambda x,p: Application.exit())
+    menu.show()
 
 
-main.addOption("Show schedule", lambda x: Application.exit())
-main.addOption("Projects", lambda x:list_projects())
-main.addOption("Tables", lambda x: Application.exit())
-main.addOption("Reports", lambda x: Application.exit())
-main.addOption("Measurements", lambda x: Application.exit())
-main.addOption("Measure progress for every project", lambda x: Application.exit())
-main.show()
+main()
 
 Application.run()
 
