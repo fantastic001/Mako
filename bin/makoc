@@ -114,10 +114,64 @@ def list_projects(b, params):
 
 # END Projects submenu ###########################################
 
+# Tables submenu ######################
+
+def edit_table_entry(b, p):
+    i,j = p
+    k = j+1
+    def edit(ans):
+        tables = mem.downloadTables()
+        tables[i].updateEntry(k, ans.split("|"))
+        mem.uploadTables(tables)
+        show_table(b, [i])
+    TextInput("Enter new entry values separated by '|'", edit).show()
+
+def add_table_entry(b, p):
+    i = p[0]
+    def edit(ans):
+        tables = mem.downloadTables()
+        tables[i].addEntry(ans.split("|"))
+        mem.uploadTables(tables)
+        show_table(b, [i])
+    TextInput("Enter entry values separated by '|'", edit).show()
+
+def show_table(b, p):
+    i = p[0]
+    table = mem.downloadTables()[i]
+    menu = Menu("%s <<<< %s" % (table.getName(), " | ".join(table.getFields())))
+    menu.addOption("Back", lambda x,p: tables_menu())
+    menu.addOption("Add entry", add_table_entry, params=[i])
+    for j in range(len(table.getEntries())):
+        entry = table.getEntries()[j]
+        menu.addOption(" | ".join(entry), edit_table_entry, params=[i,j])
+    menu.show()
+
+def add_table(b, p):
+    def next_step(name):
+        def create(header):
+            table = Table(name, header.split("|"))
+            tables = mem.downloadTables() 
+            tables.append(table)
+            mem.uploadTables(tables)
+            tables_menu()
+        TextInput("Enter header fields separated by '|'", create).show()
+    inputbox = TextInput("Enter table name", next_step).show()
+
+def tables_menu():
+    menu = Menu("Tables")
+    menu.addOption("Back", lambda b,p: main())
+    menu.addOption("Add table", add_table)
+    tables = mem.downloadTables()
+    for i in range(len(tables)):
+        menu.addOption(tables[i].getName(), show_table, params=[i])
+    menu.show()
+
+# END Tables submenu ##################
+
 def main():
     menu = Menu("Mako main menu")
     menu.addOption("Projects", list_projects)
-    menu.addOption("Tables", lambda x,p: Application.exit())
+    menu.addOption("Tables", lambda x,p: tables_menu())
     menu.addOption("Reports", lambda x,p: Application.exit())
     menu.addOption("Measurements", lambda x,p: Application.exit())
     menu.addOption("Measure progress for every project", lambda x,p: Application.exit())
