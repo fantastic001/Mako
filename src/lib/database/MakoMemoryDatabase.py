@@ -53,7 +53,7 @@ class MakoMemoryDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
-        self.measurements[actions_id] = data
+        self.measurements[action_id] = data
         self.handleExports()
 
     def uploadData(self, data):
