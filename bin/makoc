@@ -16,7 +16,7 @@ import datetime
 
 from easy_widgets import * 
 
-mem = MakoMemoryDatabase(frequency=0, db=MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"]))
+mem = MakoMemoryDatabase(frequency=3, db=MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"]))
 
 Application.addColor("task", "dark red", "")
 Application.addColor("task_done", "dark green", "")
@@ -168,13 +168,40 @@ def tables_menu():
 
 # END Tables submenu ##################
 
+# Measurements submenu ###############
+
+def action_menu(b, p):
+    i = p[0]
+    data = mem.downloadMeasurementData(i)
+    listing = Menu("Data")
+    listing.addOption("Back", lambda b,p: measurements_menu())
+    for d in data:
+        listing.addOption("%s | %f" % (str(d[0]), d[1]), lambda x,p: 0)
+    listing.show()
+
+def measurements_menu():
+    actions = mem.downloadMeasurementActions()
+    ams = AMS()
+    menu = Menu("Measurements")
+    menu.addOption("Back", lambda b,p: main())
+    for action in actions:
+        menu.addOption(action.getIdentifier(), action_menu, params=[action.getIdentifier()])
+    menu.show()
+
+# END Measurement submenu
+
+def bye():
+    mem.save()
+    Application.exit()
+
 def main():
     menu = Menu("Mako main menu")
     menu.addOption("Projects", list_projects)
     menu.addOption("Tables", lambda x,p: tables_menu())
     menu.addOption("Reports", lambda x,p: Application.exit())
-    menu.addOption("Measurements", lambda x,p: Application.exit())
+    menu.addOption("Measurements", lambda x,p: measurements_menu())
     menu.addOption("Measure progress for every project", lambda x,p: Application.exit())
+    menu.addOption("Exit", lambda b,p: bye())
     menu.show()
 
 
