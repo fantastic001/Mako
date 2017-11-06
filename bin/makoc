@@ -178,17 +178,119 @@ def action_menu(b, p):
     for d in data:
         listing.addOption("%s | %f" % (str(d[0]), d[1]), lambda x,p: 0)
     listing.show()
+    
+def measure_all(b, p):
+    actions = mem.downloadMeasurementActions()
+    ams = AMS()
+    tables = mem.downloadTables()
+    print(actions)
+    for action in actions:
+        metric = action
+        data = mem.downloadMeasurementData(metric.getIdentifier())
+        val = metric.measure(tables)
+        data.append((datetime.date.today(), val))
+        mem.uploadMeasurementData(metric.getIdentifier(), data)
+    mem.save()
+    MessageBox("Measurement", "Measurements are done and saved to database").exec()
 
 def measurements_menu():
     actions = mem.downloadMeasurementActions()
     ams = AMS()
     menu = Menu("Measurements")
     menu.addOption("Back", lambda b,p: main())
+    menu.addOption("Measure all", measure_all)
     for action in actions:
         menu.addOption(action.getIdentifier(), action_menu, params=[action.getIdentifier()])
     menu.show()
 
 # END Measurement submenu
+
+# Reports submenu 
+
+class MonthCursesReportView(ReportView):
+    def show(self, report):
+        s = ""
+        if report.getField("expected_time") == "":
+            return
+        s += "Total expected time for all tasks: %s\n" % report.getField("expected_time")
+        s += "Tasks that have to be split\n"
+        l = ["Project", "Subproject", "Task text"]
+        table = Table("Tasks that have to be split", l)
+        for task in report.getField("to_split"):
+            table.addEntry([task["project"], task["subproject"], task["task"]])
+        s += "\n" + str(table) + "\n"
+        print("Expected time this month for each project")
+        table = Table("Expected time this month for each project", ["Project name", "Expected time this month"])
+        for p in report.getField("expected_per_project"):
+            table.addEntry([p["project"], str(p["time"]) + "h"])
+        s += str(table)
+        MessageBox(report.getName(), s).exec()
+
+class QuarterCursesReportView(ReportView):
+    def show(self, report):
+        if report.getField("subprojects") == "":
+            return
+        l = ["Project name", "Expected time", "Spent time"]
+        table = Table("Quarter report", l)
+        for project in report.getField("projects"):
+            subprojects = report.getField("subprojects")[project]
+            expected = 0
+            real = 0
+            for subproject in subprojects["subprojects"]:
+                expected += int(subprojects["expected"][subproject])
+                real += int(subprojects["real"][subproject])
+            table.addEntry([project, str(expected), str(real)])
+        MessageBox(report.getName(), str(table)).exec()
+
+def show_report(b, p):
+    r = p[0]
+    view = MonthCursesReportView()
+    view.show(r)
+    view = QuarterCursesReportView()
+    view.show(r)
+
+def add_monthly_report(b, p):
+    def gen(ans):
+        if ans == "":
+            reports_submenu()
+        year = ans.split("-")[0]
+        month = ans.split("-")[1]
+        generator = MonthReportGenerator(mem.downloadProjects())
+        generator.setup(int(year), int(month))
+        report = generator.generate()
+        reports = mem.downloadReports()
+        reports.append(report)
+        mem.uploadReports(reports)
+        reports_submenu()
+    TextInput("Enter year and month in the year to generate report. Format has to be YYYY-MM", gen).show()
+
+def add_quarter_report(b, p):
+    def gen(ans):
+        if ans == "":
+            reports_submenu()
+        year = ans.split("-")[0]
+        quarter = ans.split("-")[1]
+        generator = QuarterReportGenerator(mem.downloadProjects())
+        generator.setup(int(year), int(quarter), True, True)
+        report = generator.generate()
+        reports = mem.downloadReports()
+        reports.append(report)
+        mem.uploadReports(reports)
+        reports_submenu()
+    TextInput("Enter year and quarter in the year to generate report. Format has to be YYYY-Q", gen).show()
+
+def reports_submenu():
+    reports = mem.downloadReports()
+    menu = Menu("Reports")
+    menu.addOption("Back", lambda b,p: main())
+    menu.addOption("Add monthly report", add_monthly_report)
+    menu.addOption("Add quarter report", add_quarter_report)
+    for report in reports:
+        s = "%s | %s" % (report.getName(), str(report.getDate()))
+        menu.addOption(s, show_report, params=[report])
+    menu.show()
+
+# END reports submenu 
 
 def bye():
     mem.save()
@@ -198,9 +300,8 @@ def main():
     menu = Menu("Mako main menu")
     menu.addOption("Projects", list_projects)
     menu.addOption("Tables", lambda x,p: tables_menu())
-    menu.addOption("Reports", lambda x,p: Application.exit())
+    menu.addOption("Reports", lambda x,p: reports_submenu())
     menu.addOption("Measurements", lambda x,p: measurements_menu())
-    menu.addOption("Measure progress for every project", lambda x,p: Application.exit())
     menu.addOption("Exit", lambda b,p: bye())
     menu.show()
 
