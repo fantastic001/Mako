@@ -37,7 +37,19 @@ class MakoCRUD(object):
         def visitor(p):
             if p.getName() == project_name:
                 for sp in p.getSubprojects():
-                    callback(sp)
+                    if sp.isActive():
+                        callback(sp)
+        self.visitProjects(visitor)
+    
+    def visitLegacySubprojects(self, project_name, callback):
+        """
+        for every legacy subproject in project given by project name, call callback(subproject)
+        """
+        def visitor(p):
+            if p.getName() == project_name:
+                for sp in p.getSubprojects():
+                    if not sp.isActive():
+                        callback(sp)
         self.visitProjects(visitor)
 
     def addSubproject(self, project_name, subproject_name):
@@ -51,11 +63,10 @@ class MakoCRUD(object):
         projects = self.db.downloadProjects()
         for project in projects:
             if project.getName() == project_name:
-                subprojects = project.getSubprojects().copy()
-                project.deleteAllSubprojects()
+                subprojects = project.getSubprojects()
                 for sp in subprojects:
                     if sp.getName() != subproject_name:
-                        project.addSubproject(sp)
+                        sp.setActive(False)
         self.db.uploadProjects(projects)
 
     def visitTasks(self, project_name, subproject_name, callback):

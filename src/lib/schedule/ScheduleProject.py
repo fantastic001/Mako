@@ -30,9 +30,6 @@ class ScheduleProject(object):
     def getSubprojects(self):
         return self.subprojects 
 
-    def deleteAllSubprojects(self):
-        self.subprojects = []
-
     def toDict(self):
         d = {}
         d["name"] = self.name

@@ -91,11 +91,10 @@ def delete_subproject(project_name, name, **kw):
     i = get_project_index(projects, project_name)
     if i == -1:
         print("Project %s not found" % project_name)
-    subprojects = projects[i].getSubprojects().copy()
-    projects[i].deleteAllSubprojects()
-    for sp in subprojects:
-        if sp.getName() != name:
-            projects[i].addSubproject(sp)
+    j = get_subproject_index(projects[i].getSubprojects(), name)
+    if j == -1:
+        print("Subproject not found")
+    projects[i].getSubprojects()[j].setActive(False)
     db.uploadProjects(projects)
 
 stack.pushCommand("projects")

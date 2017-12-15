@@ -8,6 +8,13 @@ class ScheduleSubproject(object):
     def __init__(self, name):
         self.name = name 
         self.tasks = [] 
+        self.active = True
+
+    def setActive(self, active=True):
+        self.active = active
+
+    def isActive(self):
+        return self.active
 
     def getName(self):
         return self.name 
@@ -39,6 +46,7 @@ class ScheduleSubproject(object):
     def toDict(self):
         d = {}
         d["name"] = self.name
+        d["active"] = self.active
         d["tasks"] = []
         for task in self.tasks:
             d["tasks"].append(task.toDict())
@@ -46,6 +54,7 @@ class ScheduleSubproject(object):
 
     def fromDict(d):
         sp = ScheduleSubproject(d["name"])
+        sp.setActive(d.get("active", True))
         for task in d["tasks"]:
             sp.addTask(Task.fromDict(task))
         return sp 
