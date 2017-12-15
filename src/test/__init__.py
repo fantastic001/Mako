@@ -16,3 +16,4 @@ from .TestMakoDesktopDatabase import *
 from .TestSchedule import * 
 from .TestConfigManager import * 
 from .TestMakoMemoryDatabase import * 
+#from .TestMakoCRUD import * 
