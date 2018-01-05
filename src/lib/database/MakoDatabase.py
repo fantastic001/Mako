@@ -185,6 +185,7 @@ class MakoDatabase(object):
             db.uploadMeasurementData(action.getIdentifier(), self.downloadMeasurementData(action.getIdentifier()))
         db.uploadData(self.downloadData())
         db.uploadSchedules(self.downloadSchedules())
+        print(self.downloadTables())
         db.uploadTables(self.downloadTables())
         db.uploadReports(self.downloadReports())
         db.uploadDefaultConditions(self.downloadDefaultConditions())
