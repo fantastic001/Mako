@@ -333,7 +333,8 @@ stack.popAll()
 
 stack.pushCommand("today")
 def today(**kw):
-    crud.visitTasksToday(lambda p,sp,t: print("%s\t%s\t%s" % (p.getName(), sp.getName(), t.getText())))
+    introduce("Tsks for today (without increasing spent time automatically)")
+    crud.visitTasksToday(lambda p,sp,t: print("%s\t%s\t%s | %d hours" % (p.getName(), sp.getName(), t.getText(), t.getExpectedTime())))
 stack.assignAction(today, "Show tasks which can be done today by last schedule")
 stack.popAll()
 
