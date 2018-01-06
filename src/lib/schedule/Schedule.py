@@ -49,6 +49,29 @@ class Schedule(object):
             if day == self.entries[i].getDay():
                 if start <= self.entries[i].getStart() and self.entries[i].getStart() < start+duration:
                     del self.entries[i]
+    def tasksToday(self, projects, day, added=[]):
+        entries = [entry for entry in self.entries if entry.getDay() == day]
+        if entries == []:
+            return []
+        head, *tail = entries 
+        tasks = [(p, sp, task) for p in projects 
+            for sp in p.getSubprojects() 
+            for task in sp.getAllTasks() 
+            if not task.isDone() and not (p,sp,task) in added
+        ]
+        tasks = sorted(tasks, key=lambda x: x[2].getDueDate())
+        l = [(p, sp, t) for p,sp,t in tasks 
+            if head.getProject().getName() == p.getName() and head.getSubproject().getName() == sp.getName()
+        ]
+        if l == []:
+            return [] 
+        first, *rest = l
+        if head.getDuration() > first[2].getExpectedTime():
+            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[dict(head.toDict(), duration=head.getDuration() - first[2].getExpectedTime())] + [e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
+        elif head.getDuration() == first[2].getExpectedTime():
+            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
+        else:
+            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
 
     def toDict(self):
         d = {}
