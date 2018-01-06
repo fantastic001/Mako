@@ -157,6 +157,12 @@ class MakoCRUD(object):
         for error in errors:
             error_callback(error[1].getDescription())
         if len(errors) == 0: self.db.uploadSchedules(schedules)
+    
+    def visitTasksToday(self, callback):
+        """
+        callback(project, subproject, task)
+        """
+        self.performOnLastSchedule(lambda x: [callback(p,sp,t) for p,sp,t in x.tasksToday(self.db.downloadProjects(), datetime.date.today().weekday()+1)], lambda text: None)
 
     def addEntryToLastSchedule(self, day, time, duration, project_name, subproject_name):
         schedules = sorted(db.downloadSchedules(), key=key_operator)

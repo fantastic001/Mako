@@ -9,6 +9,7 @@ from mako.lib.reporting.month import *
 from mako.lib.reporting.quarter import * 
 from mako.lib.table import * 
 from mako.desktop import * 
+from mako.lib import MakoCRUD
 
 import sys
 import os 
@@ -22,6 +23,7 @@ except FileExistsError:
     pass
 
 db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
+crud = MakoCRUD(db)
 
 def introduce(name):
     print("%s:" % name)
@@ -328,6 +330,13 @@ stack.pop()
 
 
 stack.popAll()
+
+stack.pushCommand("today")
+def today(**kw):
+    crud.visitTasksToday(lambda p,sp,t: print("%s\t%s\t%s" % (p.getName(), sp.getName(), t.getText())))
+stack.assignAction(today, "Show tasks which can be done today by last schedule")
+stack.popAll()
+
 stack.pushCommand("schedule")
 
 def add_schedule(**kw):

@@ -11,7 +11,10 @@ class Task(object):
         self.expected = expected 
         self.spent = spent 
         self.done = done
-        self.due = due
+        if type(due) == datetime.datetime:
+            self.due = due.date()
+        else:
+            self.due = due
 
     def getText(self):
         return self.text 
