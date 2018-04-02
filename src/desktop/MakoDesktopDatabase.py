@@ -11,6 +11,8 @@ import datetime
 from datetime import date 
 import shutil
 
+from termcolor import colored 
+
 from YAPyOrg import * 
 
 class MakoDesktopDatabase(MakoDatabase):
@@ -20,6 +22,9 @@ class MakoDesktopDatabase(MakoDatabase):
 
     path: path to the db 
     """
+    
+    def warn(self, text):
+        print(colored("WARNING: ", "red") + " " + text)
 
     def init(self):
         path = self.getParams()["path"]
@@ -228,9 +233,14 @@ class MakoDesktopDatabase(MakoDatabase):
             "december": 12
         }
         elems = title.split(" ")
-        if len(elems) >= 2:
+        if len(elems) == 2:
             year = int(elems[1])
-            month = months.get(elems[0].lower(), 1)
+            try: 
+                month = months[elems[0].lower()]
+            except KeyError:
+                self.warn("Found wrongly specified month %s" % elems[0])
+        else:
+            self.warn("Not specified complete date in form month year, title is: %s" % title)
         return date(year, month, 28)
 
 
@@ -249,10 +259,14 @@ class MakoDesktopDatabase(MakoDatabase):
         spent = 0
         if len(elems) > 1:
             if len(elems) >= 3:
+                if elems[-1][-1] != "h" or elems[-2][-1] != "h":
+                    self.warn("Not specified spent or expected time properly for: %s" % title)
                 expected = int(elems[-2].strip()[:-1])
                 spent = int(elems[-1].strip()[:-1])
             else:
                 expected = int(elems[-1].strip()[:-1])
+        else:
+            self.warn("Not specified expected time for: %s" % title)
         return Task(desc, expected, spent, element.isDONE(), due)
 
     def readSubprojects(self, path):
@@ -282,6 +296,10 @@ class MakoDesktopDatabase(MakoDatabase):
                             if elements[i].getLevel() == 3:
                                 subproject.addTask(self.parseTask(elements[i], last))
                     res.append(subproject)
+                else:
+                    self.warn("Not found section with time boxing for %s" % name)
+            else:
+                self.warn("Cannot read subproject %s" % name)
         return res 
 
 
@@ -296,6 +314,8 @@ class MakoDesktopDatabase(MakoDatabase):
                 for sp in subprojects:
                     project.addSubproject(sp)
                 res.append(project)
+            else:
+                self.warn("There is file which is not directory: %s" % path)
         return res
 
     def downloadMeasurementActions(self):
