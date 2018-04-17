@@ -22,7 +22,13 @@ try:
 except FileExistsError:
     pass
 
-db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
+args = sys.argv
+db = None
+if "--ods" in args:
+    del args[args.index("--ods")]
+    db = MakoODSDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
+else:
+    db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"])
 crud = MakoCRUD(db)
 
 def introduce(name):
@@ -774,4 +780,4 @@ stack.pop()
 stack.popAll()
 stack.pushCommand("help")
 stack.assignAction(lambda: print(stack.getHelp()), "Get help")
-stack.execute(sys.argv)
+stack.execute(args)

@@ -1,5 +1,7 @@
 YAPyOrg
 ArgumentStack
 dropbox
+colorama
 termcolor
-termcolor
+odspy
+lxml
