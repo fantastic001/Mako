@@ -90,6 +90,7 @@ class MakoDesktopDatabase(MakoDatabase):
         
 
     def uploadProjects(self, projects):
+        self.autosave()
         self.removeDirectoriesSatisfying("Projects", lambda x: os.path.isdir(x))
         path = "%s/Projects/" % self.getParams()["path"]
         for p in projects:
@@ -132,6 +133,7 @@ class MakoDesktopDatabase(MakoDatabase):
         f.close()
 
     def uploadMeasurementActions(self, actions):
+        self.autosave()
         path = "%s/Measurements/" % self.getParams()["path"]
         for action in actions:
             in_db = False 
@@ -157,6 +159,7 @@ class MakoDesktopDatabase(MakoDatabase):
         first element in tuple is date 
         second element is value 
         """
+        self.autosave()
         path = "%s/Measurements/" % self.getParams()["path"]
         for name in os.listdir(path):
             fpath = "%s/%s/data.csv" % (path, name)
@@ -178,6 +181,7 @@ class MakoDesktopDatabase(MakoDatabase):
         pass
 
     def uploadSchedules(self, schedules):
+        self.autosave()
         self.removeFilesSatisfying("Schedules", lambda x: x[-5:] == ".json")
         path = "%s/Schedules" % self.getParams()["path"] 
         for schedule in schedules:
@@ -187,6 +191,7 @@ class MakoDesktopDatabase(MakoDatabase):
             f.close()
 
     def uploadReports(self, reports):
+        self.autosave()
         path = "%s/Reports/" % self.getParams()["path"]
         self.removeFilesSatisfying("Reports", lambda x: x[-5:] == ".json")
         for report in reports:
@@ -195,6 +200,7 @@ class MakoDesktopDatabase(MakoDatabase):
             f.close()
 
     def uploadDefaultConditions(self, conditions):
+        self.autosave()
         self.removeFilesSatisfying("Schedule conditions", lambda x: x[-5:] == ".json")
         path = "%s/Schedule conditions" % self.getParams()["path"]
         for i in range(len(conditions)):
@@ -204,6 +210,7 @@ class MakoDesktopDatabase(MakoDatabase):
             f.close()
     
     def uploadTables(self, tables):
+        self.autosave()
         self.removeFilesSatisfying("Tables", lambda x: x[-5:] == ".json")
         path = "%s/Tables" % self.getParams()["path"]
         for i in range(len(tables)):
@@ -420,3 +427,8 @@ class MakoDesktopDatabase(MakoDatabase):
         name = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
         db = MakoDesktopDatabase(path="%s/History/%s" % (self.getParams()["path"], name))
         self.export(db)
+    
+    def autosave(self):
+        if self.getParams().get("autosave", False):
+            self.exportToHistory() 
+        
