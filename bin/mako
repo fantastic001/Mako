@@ -776,6 +776,11 @@ stack.pushVariable("path")
 stack.assignAction(import_taskwarrior, "Import data from task warrior database") 
 stack.pop()
 stack.pop()
+stack.pop()
+
+stack.pushCommand("save")
+stack.assignAction(lambda **kw: db.exportToHistory(), "Save current state of database to histoory")
+stack.pop()
 
 stack.popAll()
 stack.pushCommand("help")

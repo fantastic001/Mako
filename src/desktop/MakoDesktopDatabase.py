@@ -36,22 +36,26 @@ class MakoDesktopDatabase(MakoDatabase):
             os.mkdir("%s/Reports" % path)
             os.mkdir("%s/Tables" % path)
             os.mkdir("%s/Schedule conditions" % path)
+            os.mkdir("%s/History" % path)
         except FileExistsError:
             pass
 
 
     def validate(self):
+        path = self.getParams()["path"]
         if not os.path.exists(self.getParams()["path"]):
             return False 
-        if not os.path.exists("%s/Projects"):
+        if not os.path.exists("%s/Projects" % path):
             return False 
-        if not os.path.exists("%s/Schedules"):
+        if not os.path.exists("%s/Schedules" % path):
             return False 
-        if not os.path.exists("%s/Reports"):
+        if not os.path.exists("%s/Reports" % path):
             return False 
-        if not os.path.exists("%s/Tables"):
+        if not os.path.exists("%s/Tables" % path):
             return False 
-        if not os.path.exists("%s/Schedule conditions"):
+        if not os.path.exists("%s/History" % path):
+            return False 
+        if not os.path.exists("%s/Schedule conditions" % path):
             return False 
         return True
 
@@ -411,3 +415,8 @@ class MakoDesktopDatabase(MakoDatabase):
                 res.append(Table.fromDict(json.loads(f.read())))
                 f.close()
         return res
+
+    def exportToHistory(self):
+        name = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
+        db = MakoDesktopDatabase(path="%s/History/%s" % (self.getParams()["path"], name))
+        self.export(db)
