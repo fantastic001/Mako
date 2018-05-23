@@ -11,6 +11,8 @@ from mako.lib.table import *
 from mako.desktop import * 
 from mako.lib import MakoCRUD
 
+from mako.loggers import * 
+
 import sys
 import os 
 import colorama
@@ -31,15 +33,16 @@ else:
     db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
 crud = MakoCRUD(db)
 
+log = CLILogger()
+
 def introduce(name):
-    print("%s:" % name)
-    print("_________________")
+    log.title(name)
 
 def list_projects(**kw):
     projects = db.downloadProjects()
     introduce("Projects")
     for project in projects:
-        print(project.getName())
+        log.print(project.getName())
 
 def add_project(name="", bg="ffffff", fg="000000"):
     introduce("Adding project %s" % name)
@@ -78,17 +81,17 @@ def list_subprojects(project_name, **kw):
     projects = db.downloadProjects()
     k = get_project_index(projects, project_name)
     if k == -1:
-        print("Project %s not found" % project_name)
+        log.print("Project %s not found" % project_name)
         return 
     for sp in projects[k].getSubprojects():
-        print(sp.getName())
+        log.print(sp.getName())
 
 def add_subproject(project_name, name, **kw):
     introduce("Adding %s to %s" % (name, project_name))
     projects = db.downloadProjects()
     k = get_project_index(projects, project_name)
     if k == -1:
-        print("Project %s not found" % project_name)
+        log.print("Project %s not found" % project_name)
         return 
     projects[k].addSubproject(ScheduleSubproject(name))
     db.uploadProjects(projects)
@@ -98,10 +101,10 @@ def delete_subproject(project_name, name, **kw):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project %s not found" % project_name)
+        log.print("Project %s not found" % project_name)
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
     projects[i].getSubprojects()[j].setActive(False)
     db.uploadProjects(projects)
 
@@ -152,29 +155,22 @@ stack.pop() # we do not use subprojects subcommands anymore
 stack.pushCommand("subproject")
 stack.pushVariable("name")
 
-def short_title(task):
-    if len(task.getText()) > 30:
-        return task.getText()[:30] + "..."
-    return task.getText()
+
 def list_tasks(project_name, name, **kw):
     introduce("Task list for %s -> %s" % (project_name, name))
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return 
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     tasks = projects[i].getSubprojects()[j].getAllTasks()
     k = 1
     for t in tasks:
-        text = short_title(t)
-        color = colorama.Fore.RED
-        if t.isDone():
-            color = colorama.Fore.GREEN
-        print("%d %s\t\t| %s | %s | %s %d \t %d%s" % (k, color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
+        log.task(t, k)
         k += 1
 
 stack.pushCommand("tasks")
@@ -193,11 +189,11 @@ def add_task(project_name, name, text, due, expected, **kw):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     projects[i].getSubprojects()[j].addTask(Task(text, expected, due=due))
     db.uploadProjects(projects)
@@ -219,11 +215,11 @@ def delete_task(project_name, name, text):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     if not text.isdigit():
         tasks = projects[i].getSubprojects()[j].getAllTasks().copy()
@@ -252,18 +248,14 @@ def get_task_by_text(tasks, text):
         if text.lower() in task.getText().lower():
             candidates.append(task)
     if len(candidates) == 0:
-        print("No tasks to change")
+        log.print("No tasks to change")
         exit(0)
     if len(candidates) > 1:
-        print("There's multiple tasks containing specified text, choose one:")
+        log.print("There's multiple tasks containing specified text, choose one:")
         i = 1
-        for candidate in candidates:
+        for k, candidate in enumerate(candidates):
             t = candidate 
-            text = candidate.getText()
-            color = colorama.Fore.RED
-            if t.isDone():
-                color = colorama.Fore.GREEN
-            print("%d: %s\t\t| %s | %s | %s %d \t %d%s" % (i, color, text, str(t.getDueDate()), " " * (40 - len(text)), t.getExpectedTime(), t.getSpentTime(), colorama.Style.RESET_ALL))
+            log.task(t, k+1)
         choice = int(input(">> "))
         while choice > len(candidates) or choice <= 0:
             print("Wrong number, try again")
@@ -278,11 +270,11 @@ def mark_task_done(project_name, name, text, **kw):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return 
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     if not text.isdigit():
         get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).setDone()
@@ -301,11 +293,11 @@ def increase_spent_time(project_name, name, text, dt, **kw):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return 
     j = get_subproject_index(projects[i].getSubprojects(), name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     if not text.isdigit():
         get_task_by_text(projects[i].getSubprojects()[j].getAllTasks(), text).increaseSpentTime(dt)
@@ -326,7 +318,7 @@ def list_schedules(**kw):
     schedules = db.downloadSchedules()
     for schedule in schedules:
         d = schedule.getDate()
-        print("Schedule created %s" % str(d))
+        log.print("Schedule created %s" % str(d))
 
 stack.pushCommand("schedules")
 stack.assignAction(list_schedules, "List all scedules")
@@ -340,7 +332,7 @@ stack.popAll()
 stack.pushCommand("today")
 def today(**kw):
     introduce("Tsks for today (without increasing spent time automatically)")
-    crud.visitTasksToday(lambda p,sp,t: print("%s\t%s\t%s | %d hours" % (p.getName(), sp.getName(), t.getText(), t.getExpectedTime())))
+    crud.visitTasksToday(lambda p,sp,t: log.print("%s\t%s\t%s | %d hours" % (p.getName(), sp.getName(), t.getText(), t.getExpectedTime())))
 stack.assignAction(today, "Show tasks which can be done today by last schedule")
 stack.popAll()
 
@@ -351,7 +343,7 @@ def add_schedule(**kw):
     schedules = db.downloadSchedules()
     s = Schedule(datetime.date.today())
     for condition in db.downloadDefaultConditions():
-        print("Adding condition: %s" % condition.getDescription())
+        log.print("Adding condition: %s" % condition.getDescription())
         s.addCondition(condition)
     schedules.append(s)
     db.uploadSchedules(schedules)
@@ -361,42 +353,10 @@ stack.assignAction(add_schedule, "Create new schedule")
 stack.pop()
 
 def show_tabular(table, column_size=10, has_header=True):
-    if len(table) == 0:
-        return 
-    l = len(table[0])
-    for row in table:
-        if l != len(row):
-            print("Table not alligned")
-            return 
-    i = 0
-    for row in table:
-        s = "|"
-        for column in row:
-            if len(column) > column_size:
-                column = column[:column_size]
-            s += " %s |" % (column + " "* (column_size - len(column)))
-        print(s)
-        i = i + 1
-        if has_header and i == 1:
-            print("-" * (1 + (3 + column_size) * len(row)))
+    log.table(table, has_header)
 
 def show_schedule(schedule):
-    e = schedule.getEntries()
-    table = [["Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]]
-    for t in range(24):
-        l = [str(t) + ":00"] 
-        for day in range(1, 8):
-            # now we search for entry, if exists 
-            entry = None 
-            for ee in e:
-                if ee.getDay() == day and ee.getStart() <= t and t < ee.getStart() + ee.getDuration():
-                    entry = ee 
-            if entry == None:
-                l.append("")
-            else:
-                l.append(entry.getProject().getName()[:3] + " - " + entry.getSubproject().getName())
-        table.append(l)
-    show_tabular(table)
+    log.schedule(schedule)
 
 def key_operator(entry):
     return entry.getDate()
@@ -406,24 +366,24 @@ def add_entry(day, time, duration, project_name, subproject_name, **kw):
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
     if i == -1:
-        print("Project not found")
+        log.print("Project not found")
         return 
     j = get_subproject_index(projects[i].getSubprojects(), subproject_name)
     if j == -1:
-        print("Subproject not found")
+        log.print("Subproject not found")
         return 
     try:
         schedules[-1].addEntry(ScheduleEntry(projects[i], projects[i].getSubprojects()[j], int(day), int(time), int(duration)))
         errors = schedules[-1].check()
         if len(errors) > 0:
-            print("Conditins not satisfied:")
+            log.print("Conditins not satisfied:")
             for error in errors:
-                print(error[1].getDescription())
+                log.print(error[1].getDescription())
             return 
         db.uploadSchedules(schedules)
         show_schedule(schedules[-1])
     except IndexError:
-        print("No schedules to add entry to")
+        log.print("No schedules to add entry to")
 
 
 stack.pushCommand("add")
@@ -445,11 +405,11 @@ def print_schedule(**kw):
     schedules = sorted(db.downloadSchedules(), key=key_operator)
     try:
         show_schedule(schedules[-1])
-        print("Conditions:")
+        log.print("Conditions:")
         for cond in schedules[-1].getConditions():
             print(cond.getDescription())
     except IndexError:
-        print("There's no schedule to show.")
+        log.print("There's no schedule to show.")
 
 stack.assignAction(print_schedule, "Show lastly created schedule")
 stack.pushCommand("show")
@@ -464,7 +424,7 @@ def delete_schedule_entry(day, start, duration, **kw):
         show_schedule(schedules[-1])
         db.uploadSchedules(schedules)
     except IndexError:
-        print("No available schedule found.")
+        log.print("No available schedule found.")
 
 stack.pushCommand("remove")
 stack.pushVariable("day")
@@ -484,7 +444,7 @@ def measure_all():
         metric = action
         data = db.downloadMeasurementData(metric.getIdentifier())
         val = metric.measure(tables)
-        print("%s: %f" % (metric.getIdentifier(), val))
+        log.print("%s: %f" % (metric.getIdentifier(), val))
         data.append((datetime.date.today(), val))
         db.uploadMeasurementData(metric.getIdentifier(), data)
 stack.pushCommand("measure")
@@ -497,7 +457,7 @@ def list_metrics():
     ams = AMS()
     for action in actions:
         data = db.downloadMeasurementData(action.getIdentifier())
-        print("%s: %f | on %s" % (action.getIdentifier(), data[-1][1], data[-1][0]))
+        log.print("%s: %f | on %s" % (action.getIdentifier(), data[-1][1], data[-1][0]))
     
 stack.pushCommand("metrics")
 stack.assignAction(list_metrics, "Lists all metrics with last values")
@@ -507,7 +467,7 @@ def list_reports():
     introduce("Listing reports")
     reports = db.downloadReports()
     for report in reports:
-        print("%s | %s" % (report.getName(), str(report.getDate())))
+        log.print("%s | %s" % (report.getName(), str(report.getDate())))
 stack.pushCommand("reports")
 stack.assignAction(list_reports, "List all reports")
 
@@ -517,14 +477,14 @@ class MonthCLIReportView(ReportView):
     def show(self, report):
         if report.getField("expected_time") == "":
             return
-        print("Total expected time for all tasks: %s" % report.getField("expected_time"))
-        print("Tasks that have to be split")
+        log.print("Total expected time for all tasks: %s" % report.getField("expected_time"))
+        log.print("Tasks that have to be split")
         l = [["Project", "Subproject", "Task text"]]
         for task in report.getField("to_split"):
             l.append([task["project"], task["subproject"], task["task"]])
         show_tabular(l, 30)
-        print()
-        print("Expected time this month for each project")
+        log.print()
+        log.print("Expected time this month for each project")
         l = [["Project name", "Expected time this month"]]
         for p in report.getField("expected_per_project"):
             l.append([p["project"], str(p["time"]) + "h"])
@@ -595,7 +555,7 @@ def show_report(report_name, **kw):
             r = report 
             break
     if r == None:
-        print("Report not found")
+        log.print("Report not found")
         return
     view = MonthCLIReportView()
     view.show(r)
@@ -612,7 +572,7 @@ def list_tables(**kw):
     introduce("Listing tables")
     tables = db.downloadTables()
     for table in tables:
-        print(table.getName())
+        log.print(table.getName())
 stack.assignAction(list_tables, "List all tables")
 stack.pushCommand("list")
 stack.assignAction(list_tables, "List all tables")
@@ -646,9 +606,9 @@ def show_table(name, **kw):
     introduce("Table: %s" % name)
     table = find_table_by_name(name, db.downloadTables())
     if table != None:
-        print(table)
+        log.table(table)
     else:
-        print("Not found")
+        log.print("Not found")
 stack.assignAction(show_table, "Shows specified table")
 stack.pushCommand("show")
 stack.assignAction(show_table, "Shows specified table")
@@ -659,9 +619,9 @@ def table_filter(name, filter, **kw):
     table = find_table_by_name(name, db.downloadTables())
     if table != None:
         show_tabular(table.getEntries(filter))
-        print("Total number of items: %d" % table.getEntryCount(filter))
+        log.print("Total number of items: %d" % table.getEntryCount(filter))
     else:
-        print("Not found")
+        log.print("Not found")
 stack.pushCommand("filter")
 stack.pushVariable("filter")
 stack.assignAction(table_filter, "Show only entries where at least one column contains specified filter")
@@ -702,12 +662,12 @@ def show_entry(name, entry_id, **kw):
     tables = db.downloadTables()
     table = find_table_by_name(name, tables)
     if table == None:
-        print("Not found")
+        log.print("Not found")
         return 
     e = table.getEntries()[int(entry_id)-1]
     i = 0 
     for field in table.getFields():
-        print("%s: %s" % (field, e[i]))
+        log.print("%s: %s" % (field, e[i]))
         i = i + 1
 stack.assignAction(show_entry, "Show specified entry")
 stack.pushCommand("show")
