@@ -611,7 +611,7 @@ def show_table(name, **kw):
     introduce("Table: %s" % name)
     table = find_table_by_name(name, db.downloadTables())
     if table != None:
-        log.table(table)
+        log.print(str(table))
     else:
         log.print("Not found")
 stack.assignAction(show_table, "Shows specified table")
@@ -749,36 +749,38 @@ stack.pop()
 
 stack.popAll()
 stack.pushCommand("help")
-stack.assignAction(lambda: print(stack.getHelp()), "Get help")
+stack.assignAction(lambda: log.print(stack.getHelp()), "Get help")
 
 if os.path.basename(args[0]) == "mako":
     stack.execute(args)
 elif os.path.basename(args[0]) == "mako-messenger":
-    def messenger_error():
+    def messenger_error(err):
+        print(err)
         print("Error: Please make ~/.mako/messenger.json file where you will define 'token', 'port', 'verify_token' and 'my_id'")
         exit(1)
     if not os.path.exists(os.environ["HOME"] + "/.mako/messenger.json"):
-        messenger_error()
+        messenger_error("File not found")
     config_file = open("%s/.mako/messenger.json" % os.environ["HOME"])
     bot_config = {}
     try:
-        bot_config = json.decoode(config_file.read())
-    except:
-        messenger_error()
+        bot_config = json.loads(config_file.read())
+    except Exception as e:
+        messenger_error("JSON decode error: %s" % str(e))
     config_file.close()
     if not ("token" in bot_config and "verify_token" in bot_config and "port" in bot_config and "my_id" in bot_config):
-        messenger_error()
+        messenger_error("Configuration not complete")
     log = ToStringLogger()
     class MyHook(WebHookServer):
         def handle_message(self, sender_id, text, timestamp):
+            print("Got message")
             if sender_id != bot_config["my_id"]:
                 return "You are not authorized to perform this operation."
             else:
                 log.clear()
                 stack.execute(["mako"] + shlex.split(text))
-                return log.get()
+                return log.get().split("\n")
 
                 
-    MyHook(bot_config["token"].strip(), bot_config["port"], verify_token=bot_config["verify_token"].strip()).serve()
+    MyHook(bot_config["token"].strip(), port=bot_config["port"], verify_token=bot_config["verify_token"].strip()).serve()
 else:
     print("Wrong executable name")

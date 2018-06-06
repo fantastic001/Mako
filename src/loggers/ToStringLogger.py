@@ -16,16 +16,16 @@ class ToStringLogger(BaseLogger):
 
     def task(self, task, identifier=None):
         text = self.short_title(task)
-        color = colorama.Fore.RED
+        color = "[ ]"
         if task.isDone():
-            color = colorama.Fore.GREEN
+            color = "[X]"
         if identifier is None:
-            self.s += "%s\t\t| %s | %s | %s %d \t %d%s\n" % (color, text, str(task.getDueDate()), " " * (40 - len(text)), task.getExpectedTime(), task.getSpentTime(), colorama.Style.RESET_ALL)
+            self.s += "%s\t\t| %s | %s | %s %d \t %d%s\n" % (color, text, str(task.getDueDate()), " " * (40 - len(text)), task.getExpectedTime(), task.getSpentTime(), "")
         else:
-            self.s += "%d %s\t\t| %s | %s | %s %d \t %d%s\n" % (identifier, color, text, str(task.getDueDate()), " " * (40 - len(text)), task.getExpectedTime(), task.getSpentTime(), colorama.Style.RESET_ALL)
+            self.s += "%d %s\t\t| %s | %s | %s %d \t %d%s\n" % (identifier, color, text, str(task.getDueDate()), " " * (40 - len(text)), task.getExpectedTime(), task.getSpentTime(), "")
 
     def title(self, title):
-        self.s += "%s:\n" % title
+        self.s += "%s\n" % title
 
     def table(self, table, has_header=True):
         """
@@ -73,4 +73,6 @@ class ToStringLogger(BaseLogger):
         self.s = ""
 
     def get(self):
-        return self.s
+        res = self.s.replace("\t", "    ")
+        print(res)
+        return res
