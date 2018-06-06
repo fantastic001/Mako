@@ -11,6 +11,6 @@ setup(
   keywords = ['agile', 'schedules', 'projects', 'organization'], 
   package_dir = {'mako': 'src/'},
   classifiers = [],
-  scripts = ["bin/mako"],
+  scripts = ["bin/mako", "bin/mako-messenger"],
   install_requires=["ArgumentStack", "YAPyOrg"] # dependencies listed here 
 )
