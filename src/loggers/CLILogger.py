@@ -8,7 +8,7 @@ class CLILogger(BaseLogger):
             return task.getText()[:30] + "..."
         return task.getText()
     
-    def print(self, text):
+    def print(self, text=""):
         print(text)
 
     def task(self, task, identifier=None):

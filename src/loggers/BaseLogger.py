@@ -1,7 +1,7 @@
 
 class BaseLogger(object):
     
-    def print(self, text):
+    def print(self, text=""):
         pass
 
     def task(self, task, identifier=None):

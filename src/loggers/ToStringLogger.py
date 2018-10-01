@@ -11,7 +11,7 @@ class ToStringLogger(BaseLogger):
             return task.getText()[:30] + "..."
         return task.getText()
     
-    def print(self, text):
+    def print(self, text=""):
         self.s += text + "\n"
 
     def task(self, task, identifier=None):
