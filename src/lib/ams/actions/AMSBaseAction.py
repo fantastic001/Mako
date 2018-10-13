@@ -1,4 +1,6 @@
 
+import json
+
 class AMSBaseAction:
     
     name = "base"
@@ -9,6 +11,9 @@ class AMSBaseAction:
         self.cfg = cfg 
         self.description = description 
         self.identifier = identifier 
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getIdentifier(self):
         return self.identifier 

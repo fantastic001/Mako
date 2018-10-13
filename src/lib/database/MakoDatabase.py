@@ -4,6 +4,8 @@ from ..reporting import *
 from ..ams.actions import * 
 from ..ams import * 
 
+from typing import *
+
 class MakoDatabase(object):
     
     def __init__(self, **params):
@@ -188,3 +190,69 @@ class MakoDatabase(object):
         db.uploadTables(self.downloadTables())
         db.uploadReports(self.downloadReports())
         db.uploadDefaultConditions(self.downloadDefaultConditions())
+
+    def diff(self, old: MakoDatabase):
+        projects = self.ownloadProjects()
+        projects_ = old.downloadProjects()
+
+        metrics = self.downloadMeasurementActions()
+        metrics_ = old.downloadMeasurementActions()
+
+        schedules = self.downloadSchedules()
+        schedule_ = old.downloadSchedules()
+
+        tables = self.downloadTables()
+        tables_ = old.downloadTables()
+
+        conditions = self.downloadDefaultConditions()
+        conditions_ = old.downloadDefaultConditions()
+
+        data = self.downloadData()
+        data_ = old.downloadData()
+
+        reports = self.downloadReports()
+        reports_ = old.downloadReports()
+
+        return {
+            "projects": {
+                "added": set(projects) - set(projects_), 
+                "removed": set(projects_) - set(projects)
+            },
+            "subprojects": {
+                "added": set((p,s) for p in projects for s in p.getSubprojects()) - set((p,s) for p in projects_ for s in p.getSubprojects()),
+                "remooved": set((p,s) for p in projects_ for s in p.getSubprojects()) - set((p,s) for p in projects for s in p.getSubprojects())
+            },
+            "tasks": {
+                "added": set((p,s, t) for p in projects for s in p.getSubprojects() for t in s.getAlltasks()) - set((p,s, t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()),
+                "remooved": set((p,s, t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()) - set((p,s, t) for p in projects for s in p.getSubprojects() for t in s.getAllTasks*()
+            },
+            "schedules": {
+                "added": set(schedules) - set(schedules_),
+                "removed": set(schedules_) - set(schedules)
+            },
+            "tables": {
+                "added": set(tables) - set(tables_),
+                "removed": set(tables_) - set(tables)
+            },
+            "reports": {
+                "added": set(reports) - set(reports_),
+                "removed": set(reports_) - set(reports)
+            },
+            "metrics": {
+                "added": set(metrics) - set(metrics_),
+                "removed": set(metrics_) - set(metrics)
+            },
+            "conditions": {
+                "added": set(conditions) - set(metrics_),
+                "removed": set(conditions_) - set(metrics)
+            },
+            "data": {
+                "added": set(data) - set(metrics_),
+                "removed": set(data_) - set(metrics)
+            },
+            "measurements": {
+                "added": set((a,m) for a in metrics for m in self.downloadMeasurementData(a.getIdentifier())) - set((a,m) for a in metrics_ for m in old.downloadMeasurementData(a.getIdentifier())),
+                
+                "removed": set((a,m) for a in metrics_ for m in old.downloadMeasurementData(a.getIdentifier())) - set((a,m) for a in metrics for m in self.downloadMeasurementData(a.getIdentifier())),
+            }
+        }

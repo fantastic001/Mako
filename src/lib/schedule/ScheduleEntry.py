@@ -1,5 +1,6 @@
 
 from .ScheduleProject import * 
+import json 
 
 class ScheduleEntry(object):
     
@@ -12,6 +13,9 @@ class ScheduleEntry(object):
 
     def getProject(self):
         return self.project 
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getSubproject(self):
         return self.subproject

@@ -1,3 +1,5 @@
+import json 
+
 
 class Table(object):
     
@@ -5,6 +7,9 @@ class Table(object):
         self.name = name 
         self.fields = fields
         self.entries = []
+
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getName(self):
         return self.name

@@ -1,5 +1,6 @@
 
 import datetime
+import json
 
 class ScheduleCondition(object):
     
@@ -13,6 +14,9 @@ class ScheduleCondition(object):
         self.min_duration = min_duration
         self.max_duration = max_duration
         self.allowed_dates = allowed_dates
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getDescription(self):
         return self.description

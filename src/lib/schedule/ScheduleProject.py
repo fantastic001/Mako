@@ -1,5 +1,6 @@
 
 from .ScheduleSubproject import * 
+import json
 
 class ScheduleProject(object):
     
@@ -8,6 +9,9 @@ class ScheduleProject(object):
         self.color_bg = color_bg
         self.color_fg = color_fg 
         self.subprojects = [] 
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getName(self):
         return self.name 

@@ -2,6 +2,7 @@
 import datetime
 
 from .Task import * 
+import json
 
 class ScheduleSubproject(object):
 
@@ -9,6 +10,9 @@ class ScheduleSubproject(object):
         self.name = name 
         self.tasks = [] 
         self.active = True
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def setActive(self, active=True):
         self.active = active

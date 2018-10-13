@@ -5,6 +5,7 @@ from .ScheduleProject import *
 from .ScheduleSubproject import * 
 from .ScheduleEntry import * 
 from .ScheduleCondition import * 
+import json
 
 class Schedule(object):
 
@@ -12,6 +13,9 @@ class Schedule(object):
         self.date = date 
         self.entries = [] 
         self.conditions = [] 
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def addCondition(self, cond):
         self.conditions.append(cond)

@@ -8,6 +8,9 @@ class Report(object):
         self.fields = {}
         self.name = name 
         self.date = date
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getName(self):
         return self.name 

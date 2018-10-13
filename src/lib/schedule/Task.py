@@ -1,5 +1,6 @@
 
 import datetime
+import json 
 
 class Task(object):
     
@@ -15,6 +16,9 @@ class Task(object):
             self.due = due.date()
         else:
             self.due = due
+    
+    def __hash__(self):
+        return hash(json.dumps(self.toDict(), sort_keys=True))
 
     def getText(self):
         return self.text 
