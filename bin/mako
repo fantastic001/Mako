@@ -706,6 +706,19 @@ stack.pop()
 
 stack.popAll()
 stack.pushCommand("database")
+
+stack.pushCommand("diff")
+def print_changes(index=1, **kw):
+    index = int(index)
+    diff = db.diff(db.getHistory()[- index])
+    log.diff(diff)
+stack.assignAction(print_changes, "Prints diference between lastly changed state")
+stack.pushVariable("index")
+stack.assignAction(print_changes, "Prints difference between current state and specified backward database")
+stack.pop()
+stack.pop()
+
+
 stack.pushCommand("export")
 def export_json(path, **kw):
     introduce("Exporting database to %s" % path)

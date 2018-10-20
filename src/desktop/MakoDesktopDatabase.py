@@ -427,6 +427,13 @@ class MakoDesktopDatabase(MakoDatabase):
         name = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
         db = MakoDesktopDatabase(path="%s/History/%s" % (self.getParams()["path"], name))
         self.export(db)
+
+    def getHistory(self):
+        """
+        Returns all history databases from oldest to nnewest
+        """
+        path = self.getParams()["path"]
+        return [MakoDesktopDatabase(path="%s/History/%s" % (path, name)) for name in sorted(os.listdir(path))]
     
     def autosave(self):
         if self.getParams().get("autosave", False):

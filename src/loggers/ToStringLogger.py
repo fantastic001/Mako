@@ -1,5 +1,6 @@
 from .BaseLogger import * 
 import colorama
+import json
 
 class ToStringLogger(BaseLogger):
 
@@ -76,3 +77,58 @@ class ToStringLogger(BaseLogger):
         res = self.s.replace("\t", "    ")
         print(res)
         return res
+    
+    def diff(self, diff):
+        """
+        diff: diff object returned from Database.diff method
+        """
+        for x in res["projects"]["added"]:
+            self.print("+ %s" % x)
+        for x in res["projects"]["removed"]:
+            self.print("- %s" % x)
+
+        for x, y in res["subprojects"]["added"]:
+            self.print("+ %s" % y)
+        for x, y in res["subprojects"]["removed"]:
+            self.print("- %s" % y)
+
+        for x,y,z in res["tasks"]["added"]:
+            self.print("+ %s %s %s" % (x,y,json.dumps(z.toDict())))
+        for x,y,z in res["tasks"]["removed"]:
+            self.print("- %s %s %s" % (x,y,json.dumps(z.toDict())))
+
+        for x in res["schedules"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["schedules"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x in res["tables"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["tables"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x in res["reports"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["reports"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x in res["metrics"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["metrics"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x in res["conditions"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["conditions"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x in res["data"]["added"]:
+            self.print("+ %s" % json.dumps(x.toDict()))
+        for x in res["data"]["removed"]:
+            self.print("- %s" % json.dumps(x.toDict()))
+
+        for x,y in res["measurements"]["added"]:
+            self.print("+ %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
+        for x in res["measurements"]["removed"]:
+            self.print("- %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
+

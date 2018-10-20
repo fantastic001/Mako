@@ -1,6 +1,8 @@
 from .BaseLogger import * 
 import colorama
 
+import json
+
 class CLILogger(BaseLogger):
 
     def short_title(self, task):
@@ -10,6 +12,11 @@ class CLILogger(BaseLogger):
     
     def print(self, text=""):
         print(text)
+
+    def green(self, text):
+        print(colorama.Fore.GREEN + text + colorama.Style.RESET_ALL)
+    def red(self, text):
+        print(colorama.Fore.RED + text + colorama.Style.RESET_ALL)
 
     def task(self, task, identifier=None):
         text = self.short_title(task)
@@ -66,3 +73,68 @@ class CLILogger(BaseLogger):
                     l.append(entry.getProject().getName()[:3] + " - " + entry.getSubproject().getName())
             table.append(l)
         self.table(table)
+    
+    def diff(self, diff):
+        """
+        diff: diff object returned from Database.diff method
+        """
+        res = diff 
+        self.title("Projects")
+        for x in res["projects"]["added"]:
+            self.green("+ %s" % x)
+        for x in res["projects"]["removed"]:
+            self.red("- %s" % x)
+
+        self.title("Subprojects")
+        for x, y in res["subprojects"]["added"]:
+            self.green("+ %s" % y)
+        for x, y in res["subprojects"]["removed"]:
+            self.red("- %s" % y)
+
+        self.title("Tasks")
+        for x,y,z in res["tasks"]["added"]:
+            self.green("+ %s %s %s" % (x,y,json.dumps(z.toDict())))
+        for x,y,z in res["tasks"]["removed"]:
+            self.red("- %s %s %s" % (x,y,json.dumps(z.toDict())))
+
+        self.title("Schedules")
+        for x in res["schedules"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDiict()))
+        for x in res["schedules"]["removed"]:
+            self.red("- %s" % json.dumps(x.toDiict()))
+
+        self.title("Tables")
+        for x in res["tables"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDiict()))
+        for x in res["tables"]["removed"]:
+            self.red("- %s" % json.dumps(x.toDiict()))
+
+        self.title("Reports")
+        for x in res["reports"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDict()))
+        for x in res["reports"]["removed"]:
+            self.red("- %s" % json.dumps(x.toDict()))
+
+        self.title("Metrics")
+        for x in res["metrics"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDict()))
+        for x in res["metrics"]["removed"]:
+            self.red("- %s" % json.dumps(x.toDict()))
+
+        self.title("Conditions")
+        for x in res["conditions"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDict()))
+        for x in res["conditions"]["removed"]:
+            self.reed("- %s" % json.dumps(x.toDict()))
+
+        self.title("Data")
+        for x in res["data"]["added"]:
+            self.green("+ %s" % json.dumps(x.toDict()))
+        for x in res["data"]["removed"]:
+            self.red("- %s" % json.dumps(x.toDict()))
+
+        self.title("Measurements")
+        for x,y in res["measurements"]["added"]:
+            self.green("+ %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
+        for x in res["measurements"]["removed"]:
+            self.red("- %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))

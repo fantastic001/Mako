@@ -15,3 +15,9 @@ class BaseLogger(object):
 
     def schedule(self, schedule):
         pass
+
+    def diff(self, diff):
+        """
+        diff: diff object returned from Database.diff method
+        """
+        pass

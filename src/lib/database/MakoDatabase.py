@@ -191,15 +191,15 @@ class MakoDatabase(object):
         db.uploadReports(self.downloadReports())
         db.uploadDefaultConditions(self.downloadDefaultConditions())
 
-    def diff(self, old: MakoDatabase):
-        projects = self.ownloadProjects()
+    def diff(self, old):
+        projects = self.downloadProjects()
         projects_ = old.downloadProjects()
 
         metrics = self.downloadMeasurementActions()
         metrics_ = old.downloadMeasurementActions()
 
         schedules = self.downloadSchedules()
-        schedule_ = old.downloadSchedules()
+        schedules_ = old.downloadSchedules()
 
         tables = self.downloadTables()
         tables_ = old.downloadTables()
@@ -209,22 +209,24 @@ class MakoDatabase(object):
 
         data = self.downloadData()
         data_ = old.downloadData()
+        if data is None: data = []
+        if data_ is None: data_ = []
 
         reports = self.downloadReports()
         reports_ = old.downloadReports()
 
-        return {
+        res = {
             "projects": {
-                "added": set(projects) - set(projects_), 
-                "removed": set(projects_) - set(projects)
+                "added": set(p.getName() for p in projects) - set(p.getName() for p in projects_), 
+                "removed": set(p.getName() for p in projects_) - set(p.getName() for p in projects)
             },
             "subprojects": {
-                "added": set((p,s) for p in projects for s in p.getSubprojects()) - set((p,s) for p in projects_ for s in p.getSubprojects()),
-                "remooved": set((p,s) for p in projects_ for s in p.getSubprojects()) - set((p,s) for p in projects for s in p.getSubprojects())
+                "added": set((p.getName(),s.getName()) for p in projects for s in p.getSubprojects()) - set((p.getName(),s.getName()) for p in projects_ for s in p.getSubprojects()),
+                "removed": set((p.getName(),s.getName()) for p in projects_ for s in p.getSubprojects()) - set((p.getName(),s.getName()) for p in projects for s in p.getSubprojects())
             },
             "tasks": {
-                "added": set((p,s, t) for p in projects for s in p.getSubprojects() for t in s.getAlltasks()) - set((p,s, t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()),
-                "remooved": set((p,s, t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()) - set((p,s, t) for p in projects for s in p.getSubprojects() for t in s.getAllTasks*()
+                "added": set((p.getName(),s.getName(), t) for p in projects for s in p.getSubprojects() for t in s.getAllTasks()) - set((p.getName(),s.getName(), t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()),
+                "removed": set((p.getName(),s.getName(), t) for p in projects_ for s in p.getSubprojects() for t in s.getAllTasks()) - set((p.getName(),s.getName(), t) for p in projects for s in p.getSubprojects() for t in s.getAllTasks())
             },
             "schedules": {
                 "added": set(schedules) - set(schedules_),
@@ -247,8 +249,8 @@ class MakoDatabase(object):
                 "removed": set(conditions_) - set(metrics)
             },
             "data": {
-                "added": set(data) - set(metrics_),
-                "removed": set(data_) - set(metrics)
+                "added": set(data) - set(data_),
+                "removed": set(data_) - set(data)
             },
             "measurements": {
                 "added": set((a,m) for a in metrics for m in self.downloadMeasurementData(a.getIdentifier())) - set((a,m) for a in metrics_ for m in old.downloadMeasurementData(a.getIdentifier())),
@@ -256,3 +258,7 @@ class MakoDatabase(object):
                 "removed": set((a,m) for a in metrics_ for m in old.downloadMeasurementData(a.getIdentifier())) - set((a,m) for a in metrics for m in self.downloadMeasurementData(a.getIdentifier())),
             }
         }
+        for k,v in res.items():
+            res[k]["added"] = list(res[k]["added"])
+            res[k]["removed"] = list(res[k]["removed"])
+        return res
