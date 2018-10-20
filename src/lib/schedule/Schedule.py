@@ -17,6 +17,9 @@ class Schedule(object):
     def __hash__(self):
         return hash(json.dumps(self.toDict(), sort_keys=True))
 
+    def __eq__(self, other):
+        return json.dumps(self.toDict(), sort_keys=True) == json.dumps(other.toDict(), sort_keys=True)
+
     def addCondition(self, cond):
         self.conditions.append(cond)
 

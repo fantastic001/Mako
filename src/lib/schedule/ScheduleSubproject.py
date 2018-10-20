@@ -14,6 +14,10 @@ class ScheduleSubproject(object):
     def __hash__(self):
         return hash(json.dumps(self.toDict(), sort_keys=True))
 
+
+    def __eq__(self, other):
+        if other is None: return False
+        return json.dumps(self.toDict(), sort_keys=True) == json.dumps(other.toDict(), sort_keys=True)
     def setActive(self, active=True):
         self.active = active
 
