@@ -433,7 +433,7 @@ class MakoDesktopDatabase(MakoDatabase):
         Returns all history databases from oldest to nnewest
         """
         path = self.getParams()["path"]
-        return [MakoDesktopDatabase(path="%s/History/%s" % (path, name)) for name in sorted(os.listdir(path))]
+        return [MakoDesktopDatabase(path="%s/History/%s" % (path, name)) for name in sorted(os.listdir("%s/History" % path))]
     
     def autosave(self):
         if self.getParams().get("autosave", False):
