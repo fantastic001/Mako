@@ -14,6 +14,7 @@ from mako.lib import MakoCRUD
 from mako.loggers import * 
 
 import sys
+import functools
 import os 
 import os.path
 import colorama
@@ -161,7 +162,7 @@ stack.pushCommand("subproject")
 stack.pushVariable("name")
 
 
-def list_tasks(project_name, name, **kw):
+def list_tasks(project_name, name, only_todo=False, **kw):
     introduce("Task list for %s -> %s" % (project_name, name))
     projects = db.downloadProjects()
     i = get_project_index(projects, project_name)
@@ -175,11 +176,18 @@ def list_tasks(project_name, name, **kw):
     tasks = projects[i].getSubprojects()[j].getAllTasks()
     k = 1
     for t in tasks:
-        log.task(t, k)
+        if only_todo:
+            if not t.isDone():
+                log.task(t,k)
+        else:
+            log.task(t, k)
         k += 1
 
 stack.pushCommand("tasks")
 stack.assignAction(list_tasks,"List all tasks for given subproject")
+stack.pushCommand("todo")
+stack.assignAction(functools.partial(list_tasks, only_todo=True))
+stack.pop()
 stack.pushCommand("list")
 stack.assignAction(list_tasks, "List all tasks for given subproject")
 stack.pop()
