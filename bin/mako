@@ -769,6 +769,43 @@ stack.assignAction(lambda **kw: db.exportToHistory(), "Save current state of dat
 stack.pop()
 
 stack.popAll()
+def burnout(**kw):
+    projects = db.downloadProjects()
+    for project in projects:
+        project_total = 0 
+        project_done = 0
+        for subproject in project.getSubprojects():
+            # get all tasks for this month
+            tasks = list(task for task in subproject.getAllTasks() if task.getDueDate().month == datetime.date.today().month and task.getDueDate().year == datetime.date.today().year)
+            subproject_total = sum(t.getExpectedTime() for t in tasks)
+            subproject_done = sum(t.getExpectedTime() for t in tasks if t.isDone())
+            project_total += subproject_total
+            project_done += subproject_done
+            per = 1
+            if subproject_total != 0:
+                per = subproject_done / subproject_total
+            out = ("\t%s%s| %.2f %%"  % (subproject.getName(), " "*(30 - len(subproject.getName())), 100 * per))
+            if per < 0.5:
+                log.red(out)
+            elif per == 1:
+                log.green(out)
+            else:
+                log.print(out)
+        per = 1
+        if project_total != 0:
+            per = project_done / project_total
+        out = ("%s%s| %.2f %%"  % (project.getName(), " "*(30 - len(project.getName())), 100 * per))
+        if per < 0.5:
+            log.red(out)
+        elif per == 1:
+            log.green(out)
+        else:
+            log.print(out)
+        log.print("_" * 80)
+stack.pushCommand("burnout")
+stack.assignAction(burnout, "Show burnout chart")
+
+stack.popAll()
 stack.pushCommand("help")
 stack.assignAction(lambda: log.print(stack.getHelp()), "Get help")
 
