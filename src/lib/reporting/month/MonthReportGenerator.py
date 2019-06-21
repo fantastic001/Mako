@@ -33,6 +33,16 @@ class MonthReportGenerator(ReportGenerator):
             
             project     string      project name
             time        int         number of hours
+        
+        impediments:    list        list of all tasks which took more time than expected in a given month, list of dictionaries:
+            
+            field       type        description
+
+            project     string      project name
+            subproject  string      subproject name
+            task        string      task description
+            expected    int         expected time
+            spent       int         spent time
             
     """
     
@@ -51,6 +61,7 @@ class MonthReportGenerator(ReportGenerator):
         report = Report("Monthly report for %s" % str(datetime.date.today()), datetime.date.today())
         report.setField("to_split", [])
         report.setField("expected_per_project", [])
+        report.setField("impediments", [])
         time = {}
         for project in self.getProjects():
             time[project.getName()] = 0
@@ -59,6 +70,14 @@ class MonthReportGenerator(ReportGenerator):
                     if self.in_month(task):
                         time[project.getName()] += task.getExpectedTime()
                         total += task.getExpectedTime()
+                        if task.getExpectedTime() < task.getSpentTime():
+                            report.getField("impediments").append({
+                                "project": project.getName(),
+                                "subproject": subproject.getName(),
+                                "task": task.getText(),
+                                "expected": task.getExpectedTime(),
+                                "spent": task.getSpentTime()
+                            })
                         if task.getExpectedTime() > self.time_per_task:
                             report.getField("to_split").append({
                                 "project": project.getName(),

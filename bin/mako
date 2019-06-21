@@ -502,6 +502,11 @@ class MonthCLIReportView(ReportView):
         for p in report.getField("expected_per_project"):
             l.append([p["project"], str(p["time"]) + "h"])
         show_tabular(l, 30)
+        l = [["Project name", "Subproject name", "Task", "Expected Time", "Spent time"]]
+        log.print("Impediments")
+        for impediment in report.getField("impediments"):
+            l.append([impediment["project"], impediment["subproject"], impediment["task"], "%dh" % impediment["expected"], "%dh" % impediment["spent"]])
+        show_tabular(l, 100)
 
 def generate_month(month, year, **kw):
     introduce("Generating report")
