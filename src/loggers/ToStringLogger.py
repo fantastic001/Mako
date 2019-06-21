@@ -28,11 +28,10 @@ class ToStringLogger(BaseLogger):
     def title(self, title):
         self.s += "%s\n" % title
 
-    def table(self, table, has_header=True):
+    def table(self, table, has_header=True, column_size=10):
         """
         table: list of lists
         """
-        column_size = 10
         if len(table) == 0:
             return 
         l = len(table[0])

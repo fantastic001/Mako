@@ -366,7 +366,7 @@ stack.assignAction(add_schedule, "Create new schedule")
 stack.pop()
 
 def show_tabular(table, column_size=10, has_header=True):
-    log.table(table, has_header)
+    log.table(table, has_header, column_size)
 
 def show_schedule(schedule):
     log.schedule(schedule)
@@ -506,7 +506,7 @@ class MonthCLIReportView(ReportView):
         log.print("Impediments")
         for impediment in report.getField("impediments"):
             l.append([impediment["project"], impediment["subproject"], impediment["task"], "%dh" % impediment["expected"], "%dh" % impediment["spent"]])
-        show_tabular(l, 100)
+        show_tabular(l, 30)
 
 def generate_month(month, year, **kw):
     introduce("Generating report")

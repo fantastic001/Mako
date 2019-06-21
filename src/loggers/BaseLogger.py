@@ -10,7 +10,7 @@ class BaseLogger(object):
     def title(self, title):
         pass
 
-    def table(self, table, has_header=True):
+    def table(self, table, has_header=True, column_size=10):
         pass
 
     def schedule(self, schedule):
