@@ -87,12 +87,12 @@ class MakoODSDesktopDatabase(MakoDesktopDatabase):
                         try:
                             project = [p for p in self.downloadProjects() if p.getName().lower() == pname.strip()][0]
                         except IndexError:
-                            self.warn("Cannot get project by name: %s" % pname)
+                            self.warn("Cannot get project by name: %s in %s" % (pname, name))
                             continue
                         try:
                             subproject = [p for p in project.getSubprojects() if p.getName().lower() == spname.strip()][0]
                         except IndexError:
-                            self.warn("Cannot get subproject by name: %s" % spname)
+                            self.warn("Cannot get subproject by name: %s in %s" % (spname, name))
                             continue
                         s.addEntry(ScheduleEntry(project, subproject, day, start, duration))
             res.append(s)
