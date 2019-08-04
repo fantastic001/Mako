@@ -28,7 +28,7 @@ class Schedule(object):
 
     def check(self):
         """
-        Returns list of pairs where first element is entry and second is condition 
+        Returns: list of pairs where first element is entry and second is condition which is unsatisfied.
         """
         res = []
         for cond in self.getConditions():
@@ -57,6 +57,14 @@ class Schedule(object):
                 if start <= self.entries[i].getStart() and self.entries[i].getStart() < start+duration:
                     del self.entries[i]
     def tasksToday(self, projects, day, added=[]):
+        """
+        Returns list of tasks scheduled for given day based on this schedule.
+
+        Args:
+            projects: list of ScheduleProject objects to select tasks from 
+            day: specification of the day as int (1 for Monday, 7 for Sunday)
+        Returns: list of tuples (p,sp,t) where p is ScheduleProject object, sp is ScheduleSubproject object and t is Task object
+        """
         entries = [entry for entry in self.entries if entry.getDay() == day]
         if entries == []:
             return []

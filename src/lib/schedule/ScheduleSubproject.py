@@ -19,6 +19,9 @@ class ScheduleSubproject(object):
         if other is None: return False
         return json.dumps(self.toDict(), sort_keys=True) == json.dumps(other.toDict(), sort_keys=True)
     def setActive(self, active=True):
+        """
+        Sets if subproject is active. If set to False, subproject is not considered in processing. It is like removal but only logically (it is still considered when generating reports).
+        """
         self.active = active
 
     def isActive(self):

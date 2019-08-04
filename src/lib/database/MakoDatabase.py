@@ -7,98 +7,210 @@ from ..ams import *
 from typing import *
 
 class MakoDatabase(object):
-    
+    """
+    Abstract class which all supported databases have to implement
+    """
     def __init__(self, **params):
+        """
+        Initialize database 
+
+        keyword arguments depend on specific database used
+        """
         self.params = params
         if not self.validate():
             self.init()
 
     def getParams(self):
+        """
+        Returns dictionary of parameters supplied to constructor. This function has to be called only within concrete database implementation class. 
+        
+        Returns: dictionary where keys are parameter names and values are values supplied as keyword parameters to constructor. 
+        """
         return self.params
 
     def init(self):
+        """
+        Implementation of database has to implement. 
+
+        Initialize database (assume it does not exist).
+        """
         pass
 
     def validate(self):
+        """
+        Implementation of database has to implement. 
+
+        Verify if database is created. Returns True if it exists or False if it does not.
+        """
         pass
 
     def uploadProjects(self, projects):
+        """
+        Implementation of database has to implement. 
+
+        Perform writing of list of projects to database. 
+
+        Args:
+            projects: list of ScheduleProject objects.
+        """
         pass
 
     def uploadMeasurementActions(self, actions):
+        """
+        Implementation of database has to implement. 
+
+        Writes measurement actions to database. 
+
+        Args:
+            actioins: list of BaseAction or derived objects.
+        """
         pass
 
     def uploadMeasurementData(self, action_id, data):
         """
+        Implementation of database has to implement. 
+
         data is list of tuples sorted by date from odler to newer
 
         first element in tuple is date 
         second element is value 
+
+        Args:
+            action_id: action id for which data is uploaded (see name field for every action implementation)
+            data: data structured as explained above
         """
         pass
 
     def uploadData(self, data):
         """
+        Implementation of database has to implement.
+
         Data is list of tuples where first element is name and second concrete data 
+
+        Args:
+            data: data structured as explained above
         """
         pass
 
     def uploadSchedules(self, schedules):
         """
-        schedules: list of Schedule objects:
+        Implementation of database has to implement.
+
+        Args:
+            schedules: list of Schedule objects:
 
         """
         pass
 
     def uploadReports(self, reports):
+        """
+        Implementation of database has to implement.
+
+        Args:
+            reports: list of Report objects
+
+        """
         pass
 
     def uploadDefaultConditions(self, conditions):
+        """
+        Implementation of database has to implement.
+
+        default conditions are schedule coonditions applied for every schedule by default and they are added by user. 
+
+        Args:
+            conditions: list of ScheduleCondition objects
+
+        """
         pass
 
     def uploadTables(self, tables):
+        """
+        Implementation of database has to implement.
+
+        Args:
+            tables: list of Table objects
+
+        """
         pass
 
     def downloadProjects(self):
+        """
+        Implementation of database has to implement.
+
+        Returns: list of ScheduleProject objects
+
+        """
         pass
 
     def downloadMeasurementActions(self):
+        """
+        Implementation of database has to implement.
+
+        Returns: list of BaseAction objects
+        """
         pass
 
     def downloadMeasurementData(self, action_id):
         """
+        Implementation of database has to implement.
         data is list of tuples sorted by date from odler to newer
 
         first element in tuple is date 
         second element is value 
+        Args:
+            action_id: action name for which data is requested.
+        Returns: data
+
         """
         pass
 
     def downloadData(self):
         """
-        Returns list of tuples where first element is name and second is data 
+        Implementation of database has to implement.
+
+        Returns: list of tuples where first element is name and second is data 
         """
         pass
 
     def downloadSchedules(self):
         """
-        Returns list of Schedule object
+        Implementation of database has to implement.
+
+        Returns: list of Schedule object
         """
         pass
 
     def downloadReports(self):
+        """
+        Implementation of database has to implement.
+
+        Returns: list of Report objects
+        """
         pass
 
     def downloadDefaultConditions(self):
         """
-        Returns list of conditions for schedule
+        Implementation of database has to implement.
+
+        Returns: list of ScheduleCondition objects
         """
         pass
 
     def downloadTables(self):
+        """
+        Implementation of database has to implement.
+
+        Returns: list of Table objects
+        """
         pass
 
     def toDict(self):
+        """
+        Get contents of database as dictionary
+
+        Returns: dictionary
+        """
         d = {}
         d["projects"] = [] 
         projects = self.downloadProjects()
@@ -137,6 +249,12 @@ class MakoDatabase(object):
         return d
 
     def fromDict(self, d):
+        """
+        For given dictionary (same format as toDict returns), load supplied data to database and overwrite existing data in database. 
+
+        Args:
+            d: dictionary containing data in samme format as one toDict returns
+        """
         projects = []
         for project in d["projects"]:
             projects.append(ScheduleProject.fromDict(project))
@@ -179,6 +297,9 @@ class MakoDatabase(object):
         Exports data from current datatbase to database in argument 'db'
 
         This method also does validation and initialization of ndatabase 'db' if needed
+
+        Args:
+            db: MakoDatabase object to export to.
         """
         db.uploadProjects(self.downloadProjects())
         actions = self.downloadMeasurementActions()
@@ -192,6 +313,14 @@ class MakoDatabase(object):
         db.uploadDefaultConditions(self.downloadDefaultConditions())
 
     def diff(self, old):
+        """
+        Get difference in two databases. 
+
+        Args:
+            old: MakoDatabase object which difference is calculated relative to
+        Returns:dict object with keys {"projects", "subprojects", "tasks", "schedules", "conditions", "reports", "tables", "data", "metrics", "measurements"}. 
+        Every key has dict assigned with itself with two keys: "added" and "removed" which are liists of dict objects representing concrete items representation like toDict does. 
+        """
         projects = self.downloadProjects()
         projects_ = old.downloadProjects()
 

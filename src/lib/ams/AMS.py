@@ -17,16 +17,16 @@ class AMS(object):
 
     def measure(self, project, subproject, tables, ms):
         """
-        Returns list of measurements or throws ManualInputRequiredException
-
-        to thi method, it must be provided tables of the database 
-
-        ms: list of measuring dictionary with the following fields
+        to this method, it must be provided tables of the database 
+        Args:
+            ms: list of measuring dictionary with the following fields
             
-            action: action (method) to perform measurement
-            id: id of specific action in database 
-            description: description of concrete action
-            ... every other field is specific to the action 
+                action: action (method) to perform measurement
+                id: id of specific action in database 
+                description: description of concrete action
+                ... every other field is specific to the action 
+        
+        Returns: list of measurements or throws ManualInputRequiredException
         """
         res = [] 
         for measurement in ms:
@@ -35,7 +35,7 @@ class AMS(object):
 
     def getAction(self, measurement):
         """
-        Returns concrete action specified by ms dictionary
+        Returns: concrete action specified by ms dictionary
 
         see documentation for measure(...) for morre info about data in dictioary 
         """
