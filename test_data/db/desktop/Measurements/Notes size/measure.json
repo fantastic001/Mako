@@ -1,6 +1,6 @@
 {
-    "id": "measureNotes",
+    "id": "measureOpt",
     "action": "filesystem.directory.size",
-    "path": "/data/Documents/Notes/",
-    "description": "Measures size of notes"
+    "path": "/opt/",
+    "description": "Measures size of opt"
 }

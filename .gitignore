@@ -14,3 +14,5 @@ src/lib/database/__pycache__/
 src/desktop/__pycache__/
 src/lib/table/__pycache__/
 build/
+test/logs/
+test/mako.bak
