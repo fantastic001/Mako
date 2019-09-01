@@ -11,12 +11,14 @@ do_test()
 	mako projects add "test" 
 	mako project "test" subprojects add subtest 
 	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
+	mako project "test" subprojects add subtest2
 	set +x
 }
 
 check_success() 
 {
-	return 1 # test failed
+	mako project test subprojects | grep subtest2
+	return $?
 }
 
 log_error() 

@@ -11,12 +11,15 @@ do_test()
 	mako projects add "test" 
 	mako project "test" subprojects add subtest 
 	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
+	mako schedule new 
+	mako schedule add 7 12 12 test subtest
 	set +x
 }
 
 check_success() 
 {
-	return 1 # test failed
+	mako today | grep "mytask"
+	return $?
 }
 
 log_error() 

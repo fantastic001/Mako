@@ -16,7 +16,8 @@ do_test()
 
 check_success() 
 {
-	return 1 # test failed
+	mako project test subproject subtest tasks | grep mytask
+	return $?
 }
 
 log_error() 

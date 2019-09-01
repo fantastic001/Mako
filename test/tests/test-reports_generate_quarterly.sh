@@ -11,12 +11,24 @@ do_test()
 	mako projects add "test" 
 	mako project "test" subprojects add subtest 
 	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
+	mako reports generate monthly 2018 1
+	mako reports generate monthly 2018 2
+	mako reports generate monthly 2018 3
+	mako reports generate monthly 2018 4
+	mako reports generate monthly 2018 5
+	mako reports generate monthly 2019 12
+	mako reports generate monthly "$(date +"%Y %m")"
+	mako reports generate quarterly "$(date +"%Y")" 1
+	mako reports generate quarterly "$(date +"%Y")" 2
+	mako reports generate quarterly "$(date +"%Y")" 3
+	mako reports generate quarterly "$(date +"%Y")" 4
 	set +x
 }
 
 check_success() 
 {
-	return 1 # test failed
+	mako reports | grep "Quarterly report"
+	return $?
 }
 
 log_error() 

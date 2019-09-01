@@ -16,7 +16,8 @@ do_test()
 
 check_success() 
 {
-	return 1 # test failed
+	mako projects | grep test
+	return $?
 }
 
 log_error() 

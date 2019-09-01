@@ -11,12 +11,15 @@ do_test()
 	mako projects add "test" 
 	mako project "test" subprojects add subtest 
 	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
+	mako tables new mytable "A|B|C"
+	mako table mytable add "AAA|2|CCC"
 	set +x
 }
 
 check_success() 
 {
-	return 1 # test failed
+	mako table mytable filter CCC | grep AAA
+	return $?
 }
 
 log_error() 
