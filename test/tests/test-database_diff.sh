@@ -16,7 +16,7 @@ do_test()
 
 check_success() 
 {
-	mako database diff | grep "+ mytask"
+	mako database diff | grep "mytask" | grep "+"
 	return $?
 }
 
