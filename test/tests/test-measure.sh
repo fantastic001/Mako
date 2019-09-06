@@ -16,7 +16,7 @@ do_test()
 {
 	"id": "measureOpt",
     "action": "filesystem.directory.size",
-    "path": "/opt/",
+    "path": "/usr/share/man/",
     "description": "Measures size of opt"
 } 
 EOF
