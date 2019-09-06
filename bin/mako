@@ -470,7 +470,10 @@ def list_metrics():
     ams = AMS()
     for action in actions:
         data = db.downloadMeasurementData(action.getIdentifier())
-        log.print("%s: %f | on %s" % (action.getIdentifier(), data[-1][1], data[-1][0]))
+        if len(data) > 0:
+            log.print("%s: %f | on %s" % (action.getIdentifier(), data[-1][1], data[-1][0]))
+        else:
+            log.print("%s: N/A" % action.getIdentifier())
     
 stack.pushCommand("metrics")
 stack.assignAction(list_metrics, "Lists all metrics with last values")
