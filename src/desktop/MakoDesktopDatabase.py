@@ -29,7 +29,7 @@ class MakoDesktopDatabase(MakoDatabase):
     def init(self):
         path = self.getParams()["path"]
         try:
-            os.mkdir("%s/" % path)
+            os.makedirs("%s/" % path, exist_ok=True)
             os.mkdir("%s/Projects" % path)
             os.mkdir("%s/Measurements" % path)
             os.mkdir("%s/Schedules" % path)
@@ -56,6 +56,8 @@ class MakoDesktopDatabase(MakoDatabase):
         if not os.path.exists("%s/History" % path):
             return False 
         if not os.path.exists("%s/Schedule conditions" % path):
+            return False 
+        if not os.path.exists("%s/Measurements" % path):
             return False 
         return True
 
@@ -125,6 +127,9 @@ class MakoDesktopDatabase(MakoDatabase):
                 f = open("%s/plan.org" % spath, "w")
                 doc = ORGDocument(elems)
                 f.write(doc.getOutput())
+                f.close()
+                f = open("%s/STATUS" % spath, "w")
+                f.write("1" if sp.isActive() else "0")
                 f.close()
 
     def writeActionToJSON(self, action, fpath):
@@ -285,10 +290,18 @@ class MakoDesktopDatabase(MakoDatabase):
         for name in os.listdir(path):
             subproject = None
             spath = path + "/" + name + "/" 
+            active = True 
+            try:
+                f = open("%s/STATUS" % spath)
+                active = f.read() == "1"
+                f.close()
+            except FileNotFoundError:
+                pass
             for fn in ["notes.org", "plan.org"]:
                 if os.path.isfile("%s/%s" % (spath, fn)):
                     spath = "%s/%s" % (spath, fn)
                     subproject = ScheduleSubproject(name)
+                    subproject.setActive(active)
             if subproject != None:
                 doc = ORGFile(spath).getDocument()
                 elements = doc.getElements()

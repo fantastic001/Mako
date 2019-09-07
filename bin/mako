@@ -90,7 +90,8 @@ def list_subprojects(project_name, **kw):
         log.print("Project %s not found" % project_name)
         return 
     for sp in projects[k].getSubprojects():
-        log.print(sp.getName())
+        if sp.isActive():
+            log.print(sp.getName())
 
 def add_subproject(project_name, name, **kw):
     introduce("Adding %s to %s" % (name, project_name))
