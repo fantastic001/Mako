@@ -58,7 +58,7 @@ class MonthReportGenerator(ReportGenerator):
         projects = self.getProjects()
         total = 0
         split = []
-        report = Report("Monthly report for %s" % str(datetime.date.today()), datetime.date.today())
+        report = Report("Monthly report for %d-%d" % (self.month, self.year), datetime.date.today())
         report.setField("to_split", [])
         report.setField("expected_per_project", [])
         report.setField("impediments", [])

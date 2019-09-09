@@ -39,7 +39,7 @@ class QuarterReportGenerator(ReportGenerator):
 
     def generate(self):
         projects = self.getProjects()
-        report = Report("Quarter report for %s" % str(datetime.date.today()), datetime.date.today())
+        report = Report("Quarterly report for %d quarter %d" % (self.year, self.quarter), datetime.date.today())
         report.setField("projects", [])
         report.setField("subprojects", {})
         for project in projects:
