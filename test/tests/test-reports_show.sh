@@ -17,7 +17,7 @@ do_test()
 	mako reports generate monthly 2018 4
 	mako reports generate monthly 2018 5
 	mako reports generate monthly 2019 12
-	mako reports generate monthly "$(date +"%Y %m")"
+	mako reports generate monthly $(date +"%Y %m")
 	mako reports generate quarterly "$(date +"%Y")" 1
 	mako reports generate quarterly "$(date +"%Y")" 2
 	mako reports generate quarterly "$(date +"%Y")" 3
@@ -27,7 +27,7 @@ do_test()
 
 check_success() 
 {
-	mako reports show "Monthly report for $(date +%Y-%m-%d)" | grep "Expected time this month for each project"
+	mako reports show "Monthly report for 4-2018" | grep "Expected time this month for each project"
 	return $?
 }
 

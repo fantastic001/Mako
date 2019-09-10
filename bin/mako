@@ -576,7 +576,7 @@ def show_report(report_name, **kw):
         if report.getName() == report_name:
             r = report 
             break
-    if r == None:
+    if r is None:
         log.print("Report not found")
         return
     view = MonthCLIReportView()
