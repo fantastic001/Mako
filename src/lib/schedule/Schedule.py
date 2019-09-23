@@ -54,8 +54,20 @@ class Schedule(object):
         """
         for i in range(len(self.entries)):
             if day == self.entries[i].getDay():
-                if start <= self.entries[i].getStart() and self.entries[i].getStart() < start+duration:
+                if (start <= self.entries[i].getStart() and self.entries[i].getStart() < start+duration) or (self.entries[i].getStart() <= start and start+duration <= self.entries[i].getStart() + self.entries[i].getDuration()):
+                    entry = ScheduleEntry.fromDict(self.entries[i].toDict())
                     del self.entries[i]
+                    if duration < entry.getDuration():
+                        # now we have to add rest back 
+                        if entry.getStart() == start:
+                            self.addEntry(ScheduleEntry(entry.getProject(), entry.getSubproject(), entry.getDay(), entry.getStart() + duration, entry.getDuration() - duration))
+                        elif entry.getStart() < start and start + duration < entry.getStart() + entry.getDuration():
+                            print("spli")
+                            self.addEntry(ScheduleEntry(entry.getProject(), entry.getSubproject(), entry.getDay(), entry.getStart(), start - entry.getStart()))
+                            self.addEntry(ScheduleEntry(entry.getProject(), entry.getSubproject(), entry.getDay(), start + duration, entry.getStart() + entry.getDuration() - start - 1))
+                        else:
+                            print("Shrink")
+                            self.addEntry(ScheduleEntry(entry.getProject(), entry.getSubproject(), entry.getDay(), entry.getStart(), entry.getDuration() - duration))
     def tasksToday(self, projects, day, added=[]):
         """
         Returns list of tasks scheduled for given day based on this schedule.
