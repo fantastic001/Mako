@@ -627,7 +627,7 @@ stack.pushVariable("name")
 def show_table(name, **kw):
     introduce("Table: %s" % name)
     table = find_table_by_name(name, db.downloadTables())
-    if table != None:
+    if table is not None:
         log.print(str(table))
     else:
         log.print("Not found")
@@ -639,7 +639,7 @@ stack.pop()
 def table_filter(name, filter, **kw):
     introduce("Filtered results")
     table = find_table_by_name(name, db.downloadTables())
-    if table != None:
+    if table is not None:
         show_tabular(table.getEntries(filter))
         log.print("Total number of items: %d" % table.getEntryCount(filter))
     else:
@@ -666,7 +666,7 @@ def table_add_entry(name, data, **kw):
     introduce("Adding entry to table")
     tables = db.downloadTables()
     table = find_table_by_name(name, tables)
-    if table != None:
+    if table is not None:
         table.addEntry(data.split("|"))
         db.uploadTables(tables)
 stack.pushCommand("add")
