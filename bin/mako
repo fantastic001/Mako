@@ -683,7 +683,7 @@ def show_entry(name, entry_id, **kw):
     introduce("Displaying entry")
     tables = db.downloadTables()
     table = find_table_by_name(name, tables)
-    if table == None:
+    if table is None:
         log.print("Not found")
         return 
     e = table.getEntries()[int(entry_id)-1]
@@ -700,7 +700,7 @@ def table_delete_entry(name, entry_id, **kw):
     introduce("Removing entry %s" % entry_id)
     tables = db.downloadTables()
     table = find_table_by_name(name, tables)
-    if table != None:
+    if table is not None:
         table.removeEntry(int(entry_id))
         db.uploadTables(tables)
 stack.pushCommand("delete")
@@ -711,7 +711,7 @@ def table_update_entry(name, entry_id, data, **kw):
     introduce("Updating entry %s" % entry_id)
     tables = db.downloadTables()
     table = find_table_by_name(name, tables)
-    if table != None:
+    if table is not None:
         table.updateEntry(int(entry_id), data.split("|"))
         db.uploadTables(tables)
 stack.pushCommand("update")
