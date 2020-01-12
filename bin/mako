@@ -803,7 +803,7 @@ def burnout(**kw):
         per = 1
         if project_total != 0:
             per = project_done / project_total
-        out = ("%s%s| %.2f %% (%.2f %% / hour)"  % (project.getName(), " "*(30 - len(project.getName())), 100 * per, 100 / project_total))
+        out = ("%s%s| %.2f %% (%.2f %% / hour)"  % (project.getName(), " "*(30 - len(project.getName())), 100 * per, 100 / project_total if project_total != 0 else 100))
         if per < 0.5:
             log.red(out)
         elif per == 1:
