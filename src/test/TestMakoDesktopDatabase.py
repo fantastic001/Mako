@@ -12,7 +12,7 @@ class TestMakoDesktopDatabase(unittest.TestCase):
         self.db = MakoDesktopDatabase(path="test_data/db/desktop/")
         self.db2 = MakoDesktopDatabase(path="test_data/db/desktop2/")
         self.db3 = MakoDesktopDatabase(path="test_data/db/desktop3/")
-        for d in ["", "2"]:
+        for d in [""]:
             f = open("test_data/db/desktop%s/Measurements/Notes size/data.csv" % d, "w")
             f.write("")
             f.close()
