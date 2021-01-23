@@ -16,3 +16,4 @@ src/lib/table/__pycache__/
 build/
 test/logs/
 test/mako.bak
+**.pyc

@@ -4,6 +4,7 @@ import unittest
 from ..desktop import MakoDesktopDatabase
 
 import shutil
+import os
 
 class TestMakoDesktopDatabase(unittest.TestCase):
     
@@ -11,7 +12,12 @@ class TestMakoDesktopDatabase(unittest.TestCase):
         self.db = MakoDesktopDatabase(path="test_data/db/desktop/")
         self.db2 = MakoDesktopDatabase(path="test_data/db/desktop2/")
         self.db3 = MakoDesktopDatabase(path="test_data/db/desktop3/")
-        
+        for d in ["", "2"]:
+            f = open("test_data/db/desktop%s/Measurements/Notes size/data.csv" % d, "w")
+            f.write("")
+            f.close()
+        os.makedirs("test_data/empty_dir", exist_ok=True)
+            
     def test_project_download(self):
         projects = self.db.downloadProjects()
         self.assertEqual(len(projects), 3)
