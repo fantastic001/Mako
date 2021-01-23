@@ -17,6 +17,10 @@ class TestMakoDesktopDatabase(unittest.TestCase):
             f.write("")
             f.close()
         os.makedirs("test_data/empty_dir", exist_ok=True)
+
+        f = open("test_data/db/desktop/Measurements/Notes size/data.csv", "w")
+        f.write("01.01.2016.,18.5")
+        f.close()
             
     def test_project_download(self):
         projects = self.db.downloadProjects()
