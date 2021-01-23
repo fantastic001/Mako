@@ -17,3 +17,4 @@ build/
 test/logs/
 test/mako.bak
 **.pyc
+test_data/
