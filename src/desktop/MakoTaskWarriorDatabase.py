@@ -83,7 +83,7 @@ class MakoTaskWarriorDatabase(MakoDatabase):
                         status = "completed"
                     due = ""
                     if task.getDueDate() != None:
-                        dt = (task.getDueDate() - datetime.datetime(1970, 1, 1)).total_seconds()
+                        dt = (task.getDueDate() - datetime.date(1970, 1, 1)).total_seconds()
                         due = str(int(dt))
                     description = task.getText()
                     pname = project.getName()
