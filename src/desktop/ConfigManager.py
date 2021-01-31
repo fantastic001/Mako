@@ -1,9 +1,9 @@
 
 import json
 import os
+from ..lib import Configuration
 
-class ConfigManager(object):
-    
+class ConfigManager(Configuration):
     def __init__(self, path, intime=True):
         """
         Initialize coonfiguration object for using DesktopDatabase 
@@ -21,36 +21,15 @@ class ConfigManager(object):
             f = open(self.path, "r")
             self.params = json.loads(f.read())
             f.close()
-    def save(self):
-        """
-        Write all parameters to config file in JSON format
-        """
-        f = open(self.path, "w")
-        f.write(json.dumps(self.params))
-        f.close()
-
-    def setParam(self, k, v):
-        """
-        Sets parameter in config file. If intime in constructor is set to True, automatically writes to file. 
-        
-        Args:
-            k: parameter name
-            v: parameter value 
-        """
-        self.params[k]=v
+    def open(self) -> dict:
+        return self.params
+    
+    def save(self, params):
+        self.params = params
         if self.intime:
-            self.save()
+            self.saveToFile(params)
 
-    def getParam(self, k, default):
-        """
-        Gets parameter value from config
-
-        Args:
-            k: name of the parameter 
-            default: default value is parameter is not present
-        Returns:
-            value of requested parameter or dedfault value if parameter is not specified. 
-        """
-        return self.params.get(k, default)
-        
-        
+    def saveToFile(self, params: dict):
+        f = open(self.path, "w")
+        f.write(json.dumps(params))
+        f.close()
