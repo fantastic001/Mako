@@ -1,19 +1,9 @@
 
 from .lib.Configuration import * 
+from .lib.MemoryConfiguration import * 
 from .lib.database import *
 from src.desktop import *
 
-
-class MemoryConfiguration(Configuration):
-    def __init__(self, data={}):
-        self.data = data
-
-    def open(self) -> dict:
-        return self.data
-
-    def save(self, params: dict):
-        self.data = params
-    
 
 class MakoDatabaseFactory(object):
     def __init__(self, configuration: Configuration):
