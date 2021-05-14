@@ -19,6 +19,9 @@ class MakoCRUD(object):
 
     def addProject(self, p_name):
         projects = self.db.downloadProjects()
+        if len(list([p.getName() for p in projects if p.getName() == p_name])):
+            print("Project with given name already exists")
+            return 
         projects.append(ScheduleProject(p_name, (0,0,0), (0,0,0)))
         self.db.uploadProjects(projects)
 
@@ -57,7 +60,9 @@ class MakoCRUD(object):
         for p in projects:
             if p.getName() == project_name:
                 p.addSubproject(ScheduleSubproject(subproject_name))
-        self.db.uploadProjects(projects)
+                self.db.uploadProjects(projects)
+                return 
+        print("Project with given name not found")
         
     def deleteSubproject(self, project_name, subproject_name):
         projects = self.db.downloadProjects()
@@ -84,54 +89,59 @@ class MakoCRUD(object):
 
     def addTask(self, pname, spname, text, due, expected):
         projects = self.db.downloadProjects()
-        proj = None
-        sproj = None
         for p in projects:
             if p.getName() == pname:
                 for sp in p.getSubprojects():
                     if sp.getName() == spname:
                         sp.addTask(Task(text, expected, due=due))
-        db.uploadProjects(projects)
+                        self.db.uploadProjects(projects)
+                        return 
+        print("Project or subproject with given name not found")
 
     def deleteTask(self, pname, spname, index):
         projects = self.db.downloadProjects()
-        proj = None
-        sproj = None
         for p in projects:
             if p.getName() == pname:
                 for sp in p.getSubprojects():
                     if sp.getName() == spname:
-                        tasks = sp.getAllTasks().copy()
-                        del tasks[index]
-                        sp.deleteAllTasks()
-                        for t in tasks:
-                            sp.addTask(t)
-        db.uploadProjects(projects)
+                        try:
+                            tasks = sp.getAllTasks().copy()
+                            del tasks[index]
+                        except IndexError:
+                            print("Wrong index of the task")
+                        else:
+                            sp.deleteAllTasks()
+                            for t in tasks:
+                                sp.addTask(t)
+                            self.db.uploadProjects(projects)
+                        return 
 
     def markTaskDone(self, pname, spname, i):
         projects = self.db.downloadProjects()
-        proj = None
-        sproj = None
         for p in projects:
             if p.getName() == pname:
                 for sp in p.getSubprojects():
                     if sp.getName() == spname:
-                        sp.getAllTasks()[i].setDone()
-        db.uploadProjects(projects)
+                        try:
+                            sp.getAllTasks()[i].setDone()
+                        except IndexError:
+                            print("Wrong task index")
+        self.db.uploadProjects(projects)
 
     def increaseSpentTime(self, pname, spname, index, dt):
         dt = int(dt)
         projects = self.db.downloadProjects()
-        proj = None
-        sproj = None
         for p in projects:
             if p.getName() == pname:
                 for sp in p.getSubprojects():
                     if sp.getName() == spname:
-                        sp.getAllTasks()[index].increaseSpentTime(dt)
-        db.uploadProjects(projects)
+                        try:
+                            sp.getAllTasks()[index].increaseSpentTime(dt)
+                        except IndexError:
+                            print("Wrong task index")
+        self.db.uploadProjects(projects)
 
-    def visitSchedules(self, schedule):
+    def visitSchedules(self, callback):
         schedules = self.db.downloadSchedules()
         for schedule in schedules:
             callback(schedule)
@@ -152,11 +162,15 @@ class MakoCRUD(object):
         data is not saved to db. You can acces description of condition with error.getDescription().
         """
         schedules = sorted(self.db.downloadSchedules(), key=lambda x: x.getDate())
-        callback(schedules[-1])
-        errors = schedules[-1].check()
-        for error in errors:
-            error_callback(error[1].getDescription())
-        if len(errors) == 0: self.db.uploadSchedules(schedules)
+        try:
+            callback(schedules[-1])
+            errors = schedules[-1].check()
+        except IndexError:
+            print("There is no schedule created yet")
+        else:
+            for error in errors:
+                error_callback(error[1].getDescription())
+            if len(errors) == 0: self.db.uploadSchedules(schedules)
     
     def visitTasksToday(self, callback):
         """
@@ -165,11 +179,14 @@ class MakoCRUD(object):
         self.performOnLastSchedule(lambda x: [callback(p,sp,t) for p,sp,t in x.tasksToday(self.db.downloadProjects(), datetime.date.today().weekday()+1)], lambda text: None)
 
     def addEntryToLastSchedule(self, day, time, duration, project_name, subproject_name):
-        schedules = sorted(db.downloadSchedules(), key=key_operator)
-        projects = db.downloadProjects()
-        project = list(filter(lambda p: p.getName() == project_name, projects))[0]
-        subproject = list(filter(lambda sp: sp.getName() == subproject_name, project.getSubprojects()))[0]
-        self.performOnLastSchedule(lambda s: s.addEntry(ScheduleEntry(project, subproject, day, time, duration)))
+        projects = self.db.downloadProjects()
+        try:
+            project = list(filter(lambda p: p.getName() == project_name, projects))[0]
+            subproject = list(filter(lambda sp: sp.getName() == subproject_name, project.getSubprojects()))[0]
+        except IndexError:
+            print("Given project or subproject not found")
+        else:
+            self.performOnLastSchedule(lambda s: s.addEntry(ScheduleEntry(project, subproject, day, time, duration)))
 
     def removeEntry(self, day, start, duration):
         self.performOnLastSchedule(lambda s: s.removeEntry(int(day), int(start), int(duration)), lambda e: print(e.getDescription()))
@@ -246,7 +263,7 @@ class MakoCRUD(object):
         
 
     def addTable(self, table_name, fields):
-        t = Table(name, fields.split("|"))
+        t = Table(table_name, fields.split("|"))
         tables = self.db.downloadTables()
         tables.append(t)
         self.db.uploadTables(tables)
@@ -261,7 +278,7 @@ class MakoCRUD(object):
 
     def addTableEntry(self, tname, data):
         def visitor(table):
-            if tble.getName() == tname:
+            if table.getName() == tname:
                 table.addEntry(data.split("|"))
         self.performOnTables(visitor)
 

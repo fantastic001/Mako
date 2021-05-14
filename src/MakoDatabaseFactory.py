@@ -2,7 +2,7 @@
 from .lib.Configuration import * 
 from .lib.MemoryConfiguration import * 
 from .lib.database import *
-from src.desktop import *
+from mako.desktop import *
 
 
 class MakoDatabaseFactory(object):

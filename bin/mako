@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python
 
 
 from ArgumentStack import * 
@@ -21,7 +21,6 @@ import colorama
 import json
 import shlex
 
-from mbot import * 
 
 stack = ArgumentStack(error_msg="Wrong option. Run 'mako help' to see available options.")
 
@@ -821,6 +820,7 @@ stack.assignAction(lambda: log.print(stack.getHelp()), "Get help")
 if os.path.basename(args[0]) == "mako":
     stack.execute(args)
 elif os.path.basename(args[0]) == "mako-messenger":
+    from mbot import * 
     def messenger_error(err):
         print(err)
         print("Error: Please make ~/.mako/messenger.json file where you will define 'token', 'port', 'verify_token' and 'my_id'")
