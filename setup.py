@@ -9,7 +9,7 @@ setup(
   url = 'https://github.com/fantastic001/Mako', # use the URL to the github repo
   download_url = 'https://github.com/fantastic001/Mako/tarball/0.2',
   keywords = ['agile', 'schedules', 'projects', 'organization'], 
-  package_dir = {'mako': 'src/'},
+  package_dir = {'mako': 'mako/'},
   classifiers = [],
   scripts = ["bin/mako", "bin/mako-messenger"],
   install_requires=["ArgumentStack", "YAPyOrg"] # dependencies listed here 

@@ -1,11 +1,11 @@
 
 import unittest 
 
-from ..lib.Configuration import * 
+from mako.lib.Configuration import * 
 from .. import MakoDatabaseFactory
-from ..lib.database import * 
-from ..desktop.MakoDesktopDatabase import * 
-from ..desktop.MakoTaskWarriorDatabase import * 
+from mako.lib.database import * 
+from mako.desktop.MakoDesktopDatabase import * 
+from mako.desktop.MakoTaskWarriorDatabase import * 
 
 class MockConfiguration(Configuration):
     def __init__(self):

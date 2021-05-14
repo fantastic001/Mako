@@ -1,4 +1,4 @@
-from src.test import *
+from mako.test import *
 import unittest
 
 if __name__ == '__main__':
