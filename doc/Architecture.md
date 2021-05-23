@@ -67,3 +67,8 @@ the whole system has to be adaptable in a sense it supports plugin system where 
 * MakoLogger is used for logging and it is an interface registered to MakoCRUD as well as to all MakoDatabaseInterface objects inheriting Loggable which has addLogger and info(...), debug(...), ... methods
 
 
+# Ideas 
+
++ move report views to reports directory 
++ create AMS action for excel tables 
++ use better declarative style for stack arguments 
