@@ -37,6 +37,7 @@ if "--ods" in args:
 else:
     db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
 crud = MakoCRUD(db)
+crud.addStatusListener(CLIStatusListener())
 
 log = CLILogger()
 
@@ -51,9 +52,7 @@ def list_projects(**kw):
 
 def add_project(name="", bg="ffffff", fg="000000"):
     introduce("Adding project %s" % name)
-    projects = db.downloadProjects()
-    projects.append(ScheduleProject(name, (255, 0, 0), (255,255,255)))
-    db.uploadProjects(projects)
+    crud.addProject(name)
 
 def delete_project(name="", **kw):
     introduce("Deleting project %s" % name)

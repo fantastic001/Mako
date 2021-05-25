@@ -4,10 +4,20 @@ from .reporting import *
 from .ams import * 
 from .table import *
 
+
+
 class MakoCRUD(object):
     
     def __init__(self, db):
         self.db = db 
+        self.listeners = []
+    
+    def addStatusListener(self, listener):
+        self.listeners.append(listener)
+    
+    def publish(self, notification, *args):
+        for listener in self.listeners:
+            getattr(listener, "on" + notification)(*args)
 
     def visitProjects(self, callback):
         """
@@ -19,8 +29,8 @@ class MakoCRUD(object):
 
     def addProject(self, p_name):
         projects = self.db.downloadProjects()
-        if len(list([p.getName() for p in projects if p.getName() == p_name])):
-            print("Project with given name already exists")
+        if len(list([p.getName() for p in projects if p.getName() == p_name])) > 0:
+            self.publish("Error", "Project with given name already exists")
             return 
         projects.append(ScheduleProject(p_name, (0,0,0), (0,0,0)))
         self.db.uploadProjects(projects)
