@@ -30,9 +30,9 @@ Application.init()
 def do_task(b, params):
     i,j,k = params
     projects = mem.downloadProjects()
-    projects[i].getSubprojects()[j].getAllTasks(k).increaseSpentTime(1)
+    projects[i].getSubprojects()[j].getAllTasks()[k].increaseSpentTime(1)
     mem.uploadProjects(projects)
-    subproject_menu(b, [i,])
+    subproject_menu(b, [i,j])
 
 
 def delete_task(b, params):
