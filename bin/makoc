@@ -79,19 +79,60 @@ def add_task(b, params):
         TextInput("Enter expected number of hours", g).show()
     TextInput("Task name", f).show()
 
+def month_menu(b, params):
+    i,j, month = params
+    m,y = month
+    subproject = mem.downloadProjects()[i].getSubprojects()[j]
+    menu = Menu(subproject.getName())
+    menu.addOption("Back", subproject_menu, params=[i,j])
+    menu.addOption("Add new task", add_task, params=[i,j])
+    for k in range(len(subproject.getAllTasks())):
+        task = subproject.getAllTasks()[k]
+        if task.getDueDate().month == m and task.getDueDate().year == y:
+            color = "task"
+            if task.isDone():
+                color = "task_done"
+            menu.addOption("%s | %s | %d | %d" % (
+                task.getText(), 
+                str(task.getDueDate()), 
+                task.getExpectedTime(), 
+                task.getSpentTime()
+                ), task_menu, color, params=[i,j,k])
+    menu.show()
+
+def month_to_text(month):
+    m,y = month
+    return [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ][m-1] +"-"+ str(y)
+
 def subproject_menu(b, params):
     i,j = params
     subproject = mem.downloadProjects()[i].getSubprojects()[j]
     menu = Menu(subproject.getName())
     menu.addOption("Back", project_menu, params=[i])
     menu.addOption("Add new task", add_task, params=[i,j])
+    months = [] 
     for k in range(len(subproject.getAllTasks())):
         task = subproject.getAllTasks()[k]
+        if (task.getDueDate().month, task.getDueDate().year) not in months:
+            months.append((task.getDueDate().month, task.getDueDate().year))
+    for month in months:
         color = "task"
-        if task.isDone():
-            color = "task_done"
-        menu.addOption("%s | %s | %d | %d" % (task.getText(), str(task.getDueDate()), task.getExpectedTime(), task.getSpentTime()), task_menu, color, params=[i,j,k])
+        menu.addOption(month_to_text(month), month_menu, color, params=[i,j,month])
     menu.show()
+
 
 def add_subproject(b, params):
     i = params[0]
