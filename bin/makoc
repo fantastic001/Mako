@@ -170,8 +170,9 @@ def edit_table_entry(b, p):
     k = j+1
     def edit(ans):
         tables = mem.downloadTables()
-        tables[i].updateEntry(k, ans.split("|"))
-        mem.uploadTables(tables)
+        if ans != "":
+            tables[i].updateEntry(k, ans.split("|"))
+            mem.uploadTables(tables)
         show_table(b, [i])
     TextInput("Enter new entry values separated by '|'", edit).show()
 
@@ -179,8 +180,9 @@ def add_table_entry(b, p):
     i = p[0]
     def edit(ans):
         tables = mem.downloadTables()
-        tables[i].addEntry(ans.split("|"))
-        mem.uploadTables(tables)
+        if ans != "":
+            tables[i].addEntry(ans.split("|"))
+            mem.uploadTables(tables)
         show_table(b, [i])
     TextInput("Enter entry values separated by '|'", edit).show()
 
@@ -198,12 +200,16 @@ def show_table(b, p):
 def add_table(b, p):
     def next_step(name):
         def create(header):
-            table = Table(name, header.split("|"))
-            tables = mem.downloadTables() 
-            tables.append(table)
-            mem.uploadTables(tables)
+            if header != "":
+                table = Table(name, header.split("|"))
+                tables = mem.downloadTables() 
+                tables.append(table)
+                mem.uploadTables(tables)
             tables_menu()
-        TextInput("Enter header fields separated by '|'", create).show()
+        if name != "":
+            TextInput("Enter header fields separated by '|'", create).show()
+        else:
+            tables_menu()
     inputbox = TextInput("Enter table name", next_step).show()
 
 def tables_menu():
