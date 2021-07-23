@@ -1,5 +1,6 @@
 #!python
 
+from mako.lib.MakoCRUD import MakoCRUD
 import easy_widgets
 from mako.lib.schedule import * 
 from mako.lib.ams import * 
@@ -20,6 +21,7 @@ from easy_widgets import *
 #mem = MakoMemoryDatabase(frequency=3, db=MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"]))
 
 mem = MakoDesktopDatabase(path="%s/.mako/db/" % os.environ["HOME"])
+crud = MakoCRUD(mem)
 
 Application.addColor("task", "dark red", "")
 Application.addColor("task_done", "dark green", "")
@@ -390,7 +392,9 @@ def schedule_main(btn, params):
     table = easy_widgets.Table("Schedule", header, rows, entry_submenu)
     table.show()
     
-
+def new_schedule(btn, params):
+    crud.addSchedule()
+    MessageBox("Schedule created", "New schedule has been created").exec()
 
 # END schedule submenu
 
@@ -401,6 +405,7 @@ def bye():
 def main():
     menu = Menu("Mako main menu")
     menu.addOption("Last schedule", schedule_main)
+    menu.addOption("New schedule", new_schedule)
     menu.addOption("Projects", list_projects)
     menu.addOption("Tables", lambda x,p: tables_menu())
     menu.addOption("Reports", lambda x,p: reports_submenu())
