@@ -1,5 +1,6 @@
 #!python
 
+import easy_widgets
 from mako.lib.schedule import * 
 from mako.lib.ams import * 
 from mako.lib.reporting import * 
@@ -347,12 +348,59 @@ def reports_submenu():
 
 # END reports submenu 
 
+# Schedule submenu
+
+def find_entry_at(schedule: Schedule, day, time) -> ScheduleEntry:
+    for entry in schedule.getEntries():
+        if entry.getDay() == day and time >= entry.getStart() and time < entry.getStart() + entry.getDuration():
+            return entry
+    return None
+
+def schedule_main(btn, params):
+    schedules = mem.downloadSchedules()
+    schedule = schedules[-1]
+    header = ["Time", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    rows = [] 
+    for i in range(24):
+        row = []
+        s = "%d:00" % i
+        if i < 10:
+            s = "0" + s
+        row.append(s)
+        for day in range(1, 8):
+            entry = find_entry_at(schedule, day, i)
+            if entry is not None:
+                row.append(entry.getProject().getName() + " - " + entry.getSubproject().getName())
+            else:
+                row.append("")
+        rows.append(row)
+    def entry_submenu(i,j):
+        if j == 0:
+            main()
+            return
+        def entry_edit(btn, params):
+            schedule_main(None, None)
+        def remove_entry(btn, params):
+            schedule_main(None, None)
+        menu = MenuBox("Entry at %s" % rows[i][0])
+        menu.addOption("Add/Edit entry", entry_edit)
+        menu.addOption("Remove entry", remove_entry)
+        menu.addOption("Cancel", lambda btn, params: schedule_main(btn, params))
+        menu.exec()
+    table = easy_widgets.Table("Schedule", header, rows, entry_submenu)
+    table.show()
+    
+
+
+# END schedule submenu
+
 def bye():
     #mem.save()
     Application.exit()
 
 def main():
     menu = Menu("Mako main menu")
+    menu.addOption("Last schedule", schedule_main)
     menu.addOption("Projects", list_projects)
     menu.addOption("Tables", lambda x,p: tables_menu())
     menu.addOption("Reports", lambda x,p: reports_submenu())

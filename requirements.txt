@@ -5,3 +5,5 @@ colorama
 termcolor
 odspy
 lxml
+easy-widgets
+urwid
