@@ -175,7 +175,8 @@ class MakoCRUD(object):
         try:
             callback(schedules[-1])
             errors = schedules[-1].check()
-        except IndexError:
+        except IndexError as e:
+            raise e
             print("There is no schedule created yet")
         else:
             for error in errors:
@@ -188,7 +189,7 @@ class MakoCRUD(object):
         """
         self.performOnLastSchedule(lambda x: [callback(p,sp,t) for p,sp,t in x.tasksToday(self.db.downloadProjects(), datetime.date.today().weekday()+1)], lambda text: None)
 
-    def addEntryToLastSchedule(self, day, time, duration, project_name, subproject_name):
+    def addEntryToLastSchedule(self, day, time, duration, project_name, subproject_name, error_callback):
         projects = self.db.downloadProjects()
         try:
             project = list(filter(lambda p: p.getName() == project_name, projects))[0]
@@ -196,10 +197,10 @@ class MakoCRUD(object):
         except IndexError:
             print("Given project or subproject not found")
         else:
-            self.performOnLastSchedule(lambda s: s.addEntry(ScheduleEntry(project, subproject, day, time, duration)))
+            self.performOnLastSchedule(lambda s: s.addEntry(ScheduleEntry(project, subproject, day, time, duration)), error_callback)
 
     def removeEntry(self, day, start, duration):
-        self.performOnLastSchedule(lambda s: s.removeEntry(int(day), int(start), int(duration)), lambda e: print(e.getDescription()))
+        self.performOnLastSchedule(lambda s: s.removeEntry(int(day), int(start), int(duration)), lambda e: print("ERROR:" + e.getDescription()))
 
     def measureAll(self, callback):
         """

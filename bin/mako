@@ -430,13 +430,8 @@ stack.pop()
 
 def delete_schedule_entry(day, start, duration, **kw):
     introduce("Deleting entry from last schedule")
-    schedules = sorted(db.downloadSchedules(), key=key_operator)
-    try:
-        schedules[-1].removeEntry(int(day), int(start), int(duration))
-        show_schedule(schedules[-1])
-        db.uploadSchedules(schedules)
-    except IndexError:
-        log.print("No available schedule found.")
+    crud.removeEntry(int(day), int(start), int(duration))
+    crud.performOnLastSchedule(show_schedule, lambda error: print(error.getDescription()))
 
 stack.pushCommand("remove")
 stack.pushVariable("day")

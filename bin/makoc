@@ -359,39 +359,66 @@ def find_entry_at(schedule: Schedule, day, time) -> ScheduleEntry:
     return None
 
 def schedule_main(btn, params):
-    schedules = mem.downloadSchedules()
-    schedule = schedules[-1]
-    header = ["Time", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    rows = [] 
-    for i in range(24):
-        row = []
-        s = "%d:00" % i
-        if i < 10:
-            s = "0" + s
-        row.append(s)
-        for day in range(1, 8):
-            entry = find_entry_at(schedule, day, i)
-            if entry is not None:
-                row.append(entry.getProject().getName() + " - " + entry.getSubproject().getName())
-            else:
-                row.append("")
-        rows.append(row)
-    def entry_submenu(i,j):
-        if j == 0:
-            main()
-            return
-        def entry_edit(btn, params):
-            schedule_main(None, None)
-        def remove_entry(btn, params):
-            schedule_main(None, None)
-        menu = MenuBox("Entry at %s" % rows[i][0])
-        menu.addOption("Add/Edit entry", entry_edit)
-        menu.addOption("Remove entry", remove_entry)
-        menu.addOption("Cancel", lambda btn, params: schedule_main(btn, params))
-        menu.exec()
-    table = easy_widgets.Table("Schedule", header, rows, entry_submenu)
-    table.show()
-    
+    def show_schedule(schedule):
+        header = ["Time", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        rows = [] 
+        for i in range(24):
+            row = []
+            s = "%d:00" % i
+            if i < 10:
+                s = "0" + s
+            row.append(s)
+            for day in range(1, 8):
+                entry = find_entry_at(schedule, day, i)
+                if entry is not None:
+                    row.append(entry.getProject().getName() + " - " + entry.getSubproject().getName())
+                else:
+                    row.append("")
+            rows.append(row)
+        def entry_submenu(i,j):
+            if j == 0:
+                main()
+                return
+            def entry_edit(btn, params):
+                select_project_menu = Menu("Select project")
+                def project_selected(btn, project):
+                    def subproject_selected(btn, subproject):
+                        def duration_selected(btn, duration):
+                            crud.addEntryToLastSchedule(j, i, duration, project, subproject, 
+                                lambda error: MessageBox("Error", error.getDescription()).exec()
+                            )
+                            schedule_main(None, None)
+                        select_duration_menu = Menu("Select duration in hours")
+                        for duration in range(1,4):
+                            select_duration_menu.addOption("%dh" % duration, duration_selected, params=duration)
+                        select_duration_menu.show()
+                    select_subproject_menu = Menu("Select subproject")
+                    crud.visitSubprojects(project, lambda subproject: select_subproject_menu.addOption(
+                        subproject.getName(),
+                        subproject_selected,
+                        params=subproject.getName()
+                    ))
+                    select_subproject_menu.show()
+                crud.visitProjects(lambda project: select_project_menu.addOption(
+                    project.getName(), 
+                    project_selected, 
+                    params=project.getName()
+                ))
+                select_project_menu.show()
+            def remove_entry(btn, params):
+                crud.removeEntry(j, i, 1)
+                schedule_main(None, None)
+            menu = MenuBox("Entry at %s" % rows[i][0])
+            menu.addOption("Add/Edit entry", entry_edit)
+            menu.addOption("Remove entry", remove_entry)
+            menu.addOption("Cancel", lambda btn, params: schedule_main(btn, params))
+            menu.exec()
+        table = easy_widgets.Table("Schedule", header, rows, entry_submenu)
+        table.show()
+    schedule = crud.performOnLastSchedule(show_schedule, 
+        lambda error: MessageBox("Schedule error", error.getDescription()).exec()
+    )
+        
 def new_schedule(btn, params):
     crud.addSchedule()
     MessageBox("Schedule created", "New schedule has been created").exec()
