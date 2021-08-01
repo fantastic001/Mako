@@ -238,18 +238,7 @@ def action_menu(b, p):
     listing.show()
     
 def measure_all(b, p):
-    actions = mem.downloadMeasurementActions()
-    ams = AMS()
-    tables = mem.downloadTables()
-    print(actions)
-    for action in actions:
-        metric = action
-        data = mem.downloadMeasurementData(metric.getIdentifier())
-        val = metric.measure(tables)
-        data.append((datetime.date.today(), val))
-        mem.uploadMeasurementData(metric.getIdentifier(), data)
-    mem.save()
-    MessageBox("Measurement", "Measurements are done and saved to database").exec()
+    crud.measureAll(lambda metric, value: MessageBox(metric.getDescription(), "Measured value is: %f" % value).exec())
 
 def measurements_menu():
     actions = mem.downloadMeasurementActions()
