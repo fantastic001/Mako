@@ -131,3 +131,5 @@ class ToStringLogger(BaseLogger):
         for x in res["measurements"]["removed"]:
             self.print("- %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
 
+    def debug(self, text):
+        pass

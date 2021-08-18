@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+from mako.loggers.Loggable import Loggable
 from ArgumentStack import * 
 from mako.lib.schedule import * 
 from mako.lib.ams import * 
@@ -31,15 +32,14 @@ except FileExistsError:
 
 args = sys.argv
 db = None
+log = CLILogger(debug=os.environ.get("MAKO_DEBUG_MODE", "") == "1")
 if "--ods" in args:
     del args[args.index("--ods")]
     db = MakoODSDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
 else:
     db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
-crud = MakoCRUD(db)
+crud = Loggable(MakoCRUD(db, log), log)
 crud.addStatusListener(CLIStatusListener())
-
-log = CLILogger()
 
 def introduce(name):
     log.title(name)

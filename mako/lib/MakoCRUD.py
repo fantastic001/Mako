@@ -1,4 +1,6 @@
 
+from mako.loggers.BaseLogger import BaseLogger
+from mako.loggers.Loggable import Loggable
 from .schedule import * 
 from .reporting import * 
 from .ams import * 
@@ -8,8 +10,11 @@ from .table import *
 
 class MakoCRUD(object):
     
-    def __init__(self, db):
-        self.db = db 
+    def __init__(self, db, logger: BaseLogger = None):
+        if logger is not None:
+            self.db = Loggable(db, logger)
+        else: 
+            self.db = db 
         self.listeners = []
     
     def addStatusListener(self, listener):

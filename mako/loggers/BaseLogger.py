@@ -21,3 +21,5 @@ class BaseLogger(object):
         diff: diff object returned from Database.diff method
         """
         pass
+    def debug(self, text):
+        pass

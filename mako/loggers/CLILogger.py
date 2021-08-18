@@ -5,6 +5,10 @@ import json
 
 class CLILogger(BaseLogger):
 
+    def __init__(self, debug=False) -> None:
+        super().__init__()
+        self._debug = debug
+
     def short_title(self, task):
         if len(task.getText()) > 30:
             return task.getText()[:30] + "..."
@@ -137,3 +141,7 @@ class CLILogger(BaseLogger):
             self.green("+ %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
         for x in res["measurements"]["removed"]:
             self.red("- %s %s %f" % (x.GetIdentifier(), str(y[0]), [1]))
+
+    def debug(self, text):
+        if self._debug:
+            print("DEBUG: %s" % text)
