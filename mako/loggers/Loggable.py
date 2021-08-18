@@ -11,12 +11,14 @@ class Loggable:
         if callable(getattr(self.obj, attr)):
             self.logger.debug("%s called with:" % attr)
             def _callable(*args, **kw):
+                self.logger.increase_debug_depth()
                 for k, v in zip(inspect.getfullargspec(getattr(self.obj, attr))[0], [self.obj] + list(args)):
-                    self.logger.debug("\t%s = %s" % (k, str(v)))
+                    self.logger.debug("%s = %s" % (k, str(v)))
                 for k,v in kw.items():
-                    self.logger.debug("\t%s = %s" % (k, str(v)))
+                    self.logger.debug("%s = %s" % (k, str(v)))
                 result = getattr(self.obj, attr)(*args, **kw)
-                self.logger.debug("\tResult = %s" % str(result))
+                self.logger.debug("Result = %s" % str(result))
+                self.logger.decrease_debug_depth()
                 return result
             return _callable
 

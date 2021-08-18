@@ -62,3 +62,6 @@ class ScheduleProject(object):
         for sp in d["subprojects"]:
             p.addSubproject(ScheduleSubproject.fromDict(sp))
         return p 
+    
+    def __repr__(self) -> str:
+        return f"ScheduleProject(name = '{self.name}')"

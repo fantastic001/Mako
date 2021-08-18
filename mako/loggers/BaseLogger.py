@@ -23,3 +23,12 @@ class BaseLogger(object):
         pass
     def debug(self, text):
         pass
+    
+    def increase_debug_depth(self):
+        pass
+
+    def decrease_debug_depth(self):
+        pass
+
+    def get_debug_depth(self):
+        return 0

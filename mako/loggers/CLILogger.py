@@ -8,6 +8,7 @@ class CLILogger(BaseLogger):
     def __init__(self, debug=False) -> None:
         super().__init__()
         self._debug = debug
+        self._debug_depth = 0
 
     def short_title(self, task):
         if len(task.getText()) > 30:
@@ -144,4 +145,14 @@ class CLILogger(BaseLogger):
 
     def debug(self, text):
         if self._debug:
-            print("DEBUG: %s" % text)
+            print("DEBUG: %s" % ("    " * self._debug_depth + text))
+    
+
+    def increase_debug_depth(self):
+        self._debug_depth += 1
+
+    def decrease_debug_depth(self):
+        self._debug_depth -= 1
+
+    def get_debug_depth(self):
+        return self._debug_depth
