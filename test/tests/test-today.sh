@@ -11,6 +11,7 @@ do_test()
 	mako projects add "test" 
 	mako project "test" subprojects add subtest 
 	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
+	mako project test subproject subtest tasks add mytask "$(date +%Y-%m)-28" 2
 	mako schedule new 
 	mako schedule add $(date +%w) 12 12 test subtest
 	set +x
@@ -18,7 +19,7 @@ do_test()
 
 check_success() 
 {
-	mako today | grep "mytask"
+	(mako today | grep "mytask") && ([ $(mako today | grep mytask | wc -l) = 2 ])
 	return $?
 }
 
