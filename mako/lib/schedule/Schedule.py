@@ -84,24 +84,37 @@ class Schedule(object):
         if entries == []:
             return []
         head, *tail = entries 
-        tasks = [(p, sp, task) for p in projects 
+        tasks = [(p, sp, i, task) for p in projects 
             for sp in p.getSubprojects() 
-            for task in sp.getAllTasks() 
-            if not task.isDone() and not (p,sp,task) in added
+            for i, task in enumerate(sp.getAllTasks()) 
+            if not task.isDone() and not (p,sp,i,task) in added
         ]
-        tasks = sorted(tasks, key=lambda x: x[2].getDueDate())
-        l = [(p, sp, t) for p,sp,t in tasks 
+        tasks = sorted(tasks, key=lambda x: x[3].getDueDate())
+        l = [(p, sp, i, t) for p,sp,i,t in tasks 
             if head.getProject().getName() == p.getName() and head.getSubproject().getName() == sp.getName()
         ]
         if l == []:
-            return [] 
+            return Schedule.fromDict(dict(
+                self.toDict(), entries=[e.toDict() for e in tail]
+            )).tasksToday(projects, day, added)
         first, *rest = l
-        if head.getDuration() > first[2].getExpectedTime():
-            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[dict(head.toDict(), duration=head.getDuration() - first[2].getExpectedTime())] + [e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
-        elif head.getDuration() == first[2].getExpectedTime():
-            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
+        fp, fsp, _, ft = first
+        if head.getDuration() > ft.getExpectedTime():
+            return [(fp, fsp, ft)] + Schedule.fromDict(dict(
+                self.toDict(), 
+                entries=[dict(head.toDict(), duration=head.getDuration() - ft.getExpectedTime())] + [
+                    e.toDict() for e in tail
+                ]
+            )).tasksToday(projects, day, [first] + added)
+        elif head.getDuration() == ft.getExpectedTime():
+            return [(fp, fsp, ft)] + Schedule.fromDict(dict(
+                self.toDict(), 
+                entries=[e.toDict() for e in tail]
+            )).tasksToday(projects, day, [first] + added)
         else:
-            return [first] + Schedule.fromDict(dict(self.toDict(), entries=[e.toDict() for e in tail])).tasksToday(projects, day, [first] + added)
+            return [(fp, fsp, ft)] + Schedule.fromDict(dict(
+                self.toDict(), entries=[e.toDict() for e in tail]
+            )).tasksToday(projects, day, [first] + added)
 
     def toDict(self):
         d = {}
