@@ -1,5 +1,5 @@
 
 from .MakoCRUD import *
-from .Configuration import * 
+from .configuration import *
 from .MemoryConfiguration import * 
 from .StatusListener import *

@@ -1,5 +1,5 @@
 
-from .MakoDatabase import * 
+from .mako_database import * 
 
 class MakoMemoryDatabase(MakoDatabase):
     """

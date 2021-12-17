@@ -1,5 +1,5 @@
 
-from .lib.Configuration import * 
+from .lib.configuration import * 
 from .lib.MemoryConfiguration import * 
 from .lib.database import *
 from mako.desktop import *

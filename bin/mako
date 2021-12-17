@@ -1,6 +1,8 @@
 #!python
 
 
+from mako.lib.plugin_factory import PluginFactory
+from mako.lib.MemoryConfiguration import MemoryConfiguration
 from mako.loggers.Loggable import Loggable
 from ArgumentStack import * 
 from mako.lib.schedule import * 
@@ -31,13 +33,13 @@ except FileExistsError:
     pass
 
 args = sys.argv
-db = None
+config: Configuration = ConfigManager(os.environ.get("MAKO_CONFIG", os.path.join(os.environ["HOME"], "mako", "config.json")), intime=False)
 log = CLILogger(debug=os.environ.get("MAKO_DEBUG_MODE", "") == "1")
 if "--ods" in args:
-    del args[args.index("--ods")]
-    db = MakoODSDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
-else:
-    db = MakoDesktopDatabase(path="%s/.mako/db" % os.environ["HOME"], autosave=True)
+    args.remove("--ods")
+    config.setProperty("database", "MakoODSDesktopDatabase")
+factory = PluginFactory(config)
+db = factory.getDatabaseInstance()
 crud = Loggable(MakoCRUD(db, log), log)
 crud.addStatusListener(CLIStatusListener())
 
@@ -741,6 +743,11 @@ stack.assignAction(export_json, "Export whole database to JSON file")
 stack.pop()
 stack.pop()
 
+for name, db_object in factory.getSecondaryDatabaseInstances():
+    stack.pushCommand(name)
+    stack.assignAction(lambda secondary_obj=db_object: db.export(secondary_obj), "Export to %s" % name)
+    stack.pop()
+
 stack.pop()
 stack.pushCommand("import")
 def import_json(path, **kw):
@@ -754,16 +761,11 @@ stack.assignAction(import_json, "Import database contained in JSON file")
 stack.pop()
 stack.pop()
 
-def import_taskwarrior(path, **kw):
-    introduce("Importing database from taskwarrior")
-    twdb = MakoTaskWarriorDatabase(path)
-    projects = twdb.downloadProjects()
-    db.uploadProjects(projects)
-stack.pushCommand("taskwarrior")
-stack.pushVariable("path")
-stack.assignAction(import_taskwarrior, "Import data from task warrior database") 
-stack.pop()
-stack.pop()
+for name, db_object in factory.getSecondaryDatabaseInstances():
+    stack.pushCommand(name)
+    stack.assignAction(lambda secondary_obj=db_object: secondary_obj.export(db), "Import from %s" % name)
+    stack.pop()
+
 stack.pop()
 
 stack.pushCommand("save")
