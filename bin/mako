@@ -174,7 +174,11 @@ def list_tasks(project_name, name, only_todo=False, **kw):
     if j == -1:
         log.print("Subproject not found")
         return 
-    tasks = projects[i].getSubprojects()[j].getAllTasks()
+    sp: ScheduleSubproject = projects[i].getSubprojects()[j]
+    for field in sp.getFieldList():
+        print("######### %s ###########" % field)
+        print(sp.getField(field))
+    tasks = sp.getAllTasks()
     k = 1
     for t in tasks:
         if only_todo:

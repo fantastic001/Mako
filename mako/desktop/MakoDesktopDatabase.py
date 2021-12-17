@@ -1,4 +1,5 @@
 
+from typing import List
 from ..lib.database import MakoDatabase 
 from ..lib.schedule import * 
 from ..lib.reporting import * 
@@ -101,10 +102,11 @@ class MakoDesktopDatabase(MakoDatabase):
                 spath = path + p.getName() + "/" + sp.getName()
                 os.mkdir(spath)
                 elems=[]
-                elems.append(ORGSection("Specific"))
-                elems.append(ORGSection("Measurable"))
-                elems.append(ORGSection("Achievable"))
-                elems.append(ORGSection("Relevant"))
+                sections = ["Specific", "Measurable", "Achievable", "Relevant"]
+                for section in sections:
+                    elems.append(ORGSection(section))
+                    if sp.hasField(section):
+                        elems.append(ORGText(sp.getField(section)))
                 elems.append(ORGSection("Time-boxed"))
                 td = {}
                 for t in sp.getAllTasks():
@@ -286,7 +288,7 @@ class MakoDesktopDatabase(MakoDatabase):
         return Task(desc, expected, spent, element.isDONE(), due)
 
     def readSubprojects(self, path):
-        res = []
+        res: List[ScheduleSubproject] = []
         for name in os.listdir(path):
             subproject = None
             spath = path + "/" + name + "/" 
@@ -302,10 +304,13 @@ class MakoDesktopDatabase(MakoDatabase):
                     spath = "%s/%s" % (spath, fn)
                     subproject = ScheduleSubproject(name)
                     subproject.setActive(active)
-            if subproject != None:
+            if subproject is not None:
                 doc = ORGFile(spath).getDocument()
                 elements = doc.getElements()
                 start = 0
+                for section in doc.createTree()[0].getSubSections():
+                    if section.getTitle().lower() not in ["time boxed", "time-boxed"]:
+                        subproject.setField(section.getTitle(), "\n".join(list(x.getOutput() for x in section.getElements())))
                 for i in range(len(elements)):
                     if elements[i].getType() == ORGElement.ELEMENT_TYPE_SECTION:
                         if elements[i].getLevel() == 1 and elements[i].getTitle().lower() in ["time boxed", "time-boxed"]:

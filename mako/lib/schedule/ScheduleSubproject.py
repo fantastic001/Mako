@@ -6,8 +6,10 @@ import json
 
 class ScheduleSubproject(object):
 
-    def __init__(self, name):
+    def __init__(self, name, fields = None):
         self.name = name 
+        if fields is None:
+            self.fields = {}
         self.tasks = [] 
         self.active = True
     
@@ -59,13 +61,28 @@ class ScheduleSubproject(object):
         d["name"] = self.name
         d["active"] = self.active
         d["tasks"] = []
+        d["fields"] = dict(**self.fields)
         for task in self.tasks:
             d["tasks"].append(task.toDict())
         return d
 
     def fromDict(d):
-        sp = ScheduleSubproject(d["name"])
+        sp = ScheduleSubproject(d["name"], dict(**d["fields"]))
         sp.setActive(d.get("active", True))
         for task in d["tasks"]:
             sp.addTask(Task.fromDict(task))
         return sp 
+    
+    def setField(self, fields_name, fields_value):
+        self.fields[fields_name] = fields_value
+    
+    def hasField(self, field_name) -> bool:
+        return field_name in self.fields
+    
+    def getField(self, field_name):
+        if self.hasField(field_name):
+            return self.fields[field_name]
+        else:
+            return None
+    def getFieldList(self):
+        return list(self.fields.keys())
