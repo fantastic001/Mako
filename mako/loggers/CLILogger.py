@@ -103,15 +103,15 @@ class CLILogger(BaseLogger):
 
         self.title("Schedules")
         for x in res["schedules"]["added"]:
-            self.green("+ %s" % json.dumps(x.toDiict()))
+            self.green("+ %s" % json.dumps(x.toDict()))
         for x in res["schedules"]["removed"]:
-            self.red("- %s" % json.dumps(x.toDiict()))
+            self.red("- %s" % json.dumps(x.toDict()))
 
         self.title("Tables")
         for x in res["tables"]["added"]:
-            self.green("+ %s" % json.dumps(x.toDiict()))
+            self.green("+ %s" % json.dumps(x.toDict()))
         for x in res["tables"]["removed"]:
-            self.red("- %s" % json.dumps(x.toDiict()))
+            self.red("- %s" % json.dumps(x.toDict()))
 
         self.title("Reports")
         for x in res["reports"]["added"]:

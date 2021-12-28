@@ -10,6 +10,8 @@ class ScheduleSubproject(object):
         self.name = name 
         if fields is None:
             self.fields = {}
+        else:
+            self.fields = fields
         self.tasks = [] 
         self.active = True
     

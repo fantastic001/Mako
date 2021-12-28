@@ -442,8 +442,10 @@ class MakoDesktopDatabase(MakoDatabase):
         return res
 
     def exportToHistory(self):
-        name = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
-        db = MakoDesktopDatabase(path="%s/History/%s" % (self.getParams()["path"], name))
+        history_path = "%s/History/" % self.getParams()["path"]
+        entries_num = len(os.listdir(history_path))
+        name = ("%d-" % entries_num) + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
+        db = MakoDesktopDatabase(path="%s/%s" % (history_path, name))
         self.export(db)
 
     def getHistory(self):
