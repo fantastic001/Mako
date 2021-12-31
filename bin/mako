@@ -162,6 +162,25 @@ stack.pop() # we do not use subprojects subcommands anymore
 stack.pushCommand("subproject")
 stack.pushVariable("name")
 
+stack.pushCommand("show")
+def show_subproject_fields(project_name, name, **kw):
+    crud.visitSubprojects(project_name, lambda sp: list(
+        print("%s: %s" %(field, sp.getField(field))) for field in sp.getFieldList() 
+    ) if name == sp.getName() else None)
+stack.assignAction(show_subproject_fields, "Show details")
+stack.pop()
+
+stack.pushCommand("set")
+stack.pushVariable("field")
+stack.pushVariable("value")
+stack.assignAction(
+    lambda project_name, name, field, value, **kw: crud.performOnSubproject(project_name, name, lambda subproject: subproject.setField(field, value)),
+    "Set field to value for given project"
+)
+stack.pop()
+stack.pop()
+stack.pop()
+
 
 def list_tasks(project_name, name, only_todo=False, **kw):
     introduce("Task list for %s -> %s" % (project_name, name))

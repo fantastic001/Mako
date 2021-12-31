@@ -102,7 +102,7 @@ class MakoDesktopDatabase(MakoDatabase):
                 spath = path + p.getName() + "/" + sp.getName()
                 os.mkdir(spath)
                 elems=[]
-                sections = ["Specific", "Measurable", "Achievable", "Relevant"]
+                sections = list(set(["Specific", "Measurable", "Achievable", "Relevant"]) | set(sp.getFieldList()))
                 for section in sections:
                     elems.append(ORGSection(section))
                     if sp.hasField(section):

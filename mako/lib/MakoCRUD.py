@@ -155,6 +155,24 @@ class MakoCRUD(object):
                         except IndexError:
                             print("Wrong task index")
         self.db.uploadProjects(projects)
+    
+    def performOnSubproject(self, pname, spname, callback):
+        projects = self.db.downloadProjects()
+        found = False
+        for j, p in enumerate(projects):
+            if p.getName() == pname:
+                for i, sp in enumerate(p.getSubprojects()):
+                    if sp.getName() == spname:
+                        found = True
+                        try:
+                            print("Updating")
+                            callback(projects[j].getSubprojects()[i])
+                        except:
+                            print("Error occured when performing peration on %s/%s" % (pname, spname))
+        if not found:
+            print("Entity cannot be found")
+        self.db.uploadProjects(projects)
+    
 
     def visitSchedules(self, callback):
         schedules = self.db.downloadSchedules()
