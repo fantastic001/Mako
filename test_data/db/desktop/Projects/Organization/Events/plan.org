@@ -1,7 +1,0 @@
-* Specific
-* Measurable
-* Achievable
-* Relevant
-* Time-boxed
-** DONE June 2017
-*** DONE Organize party - 3h - 4h

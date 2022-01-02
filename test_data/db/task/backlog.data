@@ -1,4 +1,0 @@
-{"description":"todo","entry":"20170711T090447Z","modified":"20170711T090447Z","status":"pending","uuid":"bfd99628-f89c-4e29-a2ab-0b348a5254b2"}
-{"description":"todo","due":"20170713T220000Z","entry":"20170711T090510Z","modified":"20170711T090510Z","project":"life","status":"pending","tags":["home"],"uuid":"a6e2f17e-481e-4d99-82de-115a182aeb0a"}
-{"description":"todo 2","due":"20170713T220000Z","entry":"20170711T091727Z","modified":"20170711T091727Z","project":"life","status":"pending","tags":["garden","home"],"uuid":"3a0895d3-21f5-4309-ba23-6ab9d9594c02"}
-{"description":"todo","end":"20170711T091802Z","entry":"20170711T090447Z","modified":"20170711T091802Z","status":"completed","uuid":"bfd99628-f89c-4e29-a2ab-0b348a5254b2"}

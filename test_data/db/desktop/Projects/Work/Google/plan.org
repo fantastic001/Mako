@@ -1,7 +1,0 @@
-* Specific
-* Measurable
-* Achievable
-* Relevant
-* Time-boxed
-** TODO January 2018
-*** TODO [2017-01-05] test task
