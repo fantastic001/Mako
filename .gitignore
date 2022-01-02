@@ -1,4 +1,4 @@
-test.sff
+*.sff
 src/__pycache__/
 src/lib/schedule/__pycache__/
 src/lib/schedule/formats/__pycache__/
@@ -18,3 +18,5 @@ test/logs/
 test/mako.bak
 **.pyc
 test_data/
+*.json
+dist/
