@@ -101,6 +101,14 @@ class MakoCRUD(object):
             project_name,
             visitor
         )
+    
+    def visitAllTasks(self, project_name, subproject_name, callback):
+        self.visitTasks(project_name, subproject_name, callback)
+        def visitor(sp: ScheduleSubproject):
+            if sp.getName() == subproject_name:
+                for i, task in enumerate(sp.getAllTasks()):
+                    callback(task, i)
+        self.visitLegacySubprojects(project_name, visitor)
 
     def addTask(self, pname, spname, text, due, expected):
         projects = self.db.downloadProjects()

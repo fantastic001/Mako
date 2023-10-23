@@ -40,7 +40,7 @@ if "--ods" in args:
     config.setProperty("database", "MakoODSDesktopDatabase")
 factory = PluginFactory(config)
 db = factory.getDatabaseInstance()
-crud = Loggable(MakoCRUD(db, log), log)
+crud: MakoCRUD = Loggable(MakoCRUD(db, log), log)
 crud.addStatusListener(CLIStatusListener())
 
 def introduce(name):
@@ -833,6 +833,34 @@ stack.pushCommand("burnout")
 stack.assignAction(burnout, "Show burnout chart")
 
 stack.popAll()
+
+def export_jira(output_directory, **kw):
+    try:
+        import pandas as pd 
+    except ModuleNotFoundError:
+        print("You need to install pandas in order to use this feature.")
+        os.exit(1)
+    def export_project(project: ScheduleProject):
+        data = [] 
+        def export_subproject(subproject: ScheduleSubproject):
+            data = [] 
+            def export_task(task: Task, i: int):
+                data.append({
+                    "project": project.getName(),
+                    "subproject": subproject.getName(),
+                    **task.toDict()
+                })
+            crud.visitAllTasks(project.getName(), subproject.getName(), export_task)
+            pd.DataFrame(data).to_csv(os.path.join(output_directory, "%s - %s.csv" % (project.getName(), subproject.getName())))
+        crud.visitSubprojects(project.getName(), export_subproject)
+        crud.visitLegacySubprojects(project.getName(), export_subproject)
+    crud.visitProjects(export_project)
+stack.pushCommand("export")
+stack.pushCommand("jira")
+stack.pushVariable("output_directory")
+stack.assignAction(export_jira, "Export all tasks into CSV files suitable for Jira import")
+stack.popAll()
+
 stack.pushCommand("help")
 stack.assignAction(lambda: log.print(stack.getHelp()), "Get help")
 

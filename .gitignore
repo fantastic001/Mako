@@ -20,3 +20,4 @@ test/mako.bak
 test_data/
 *.json
 dist/
+**.egg-info
