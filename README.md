@@ -5,6 +5,10 @@ Mako
 Tool for making weekly schedules, organizing projects and measuring progress in achieving goals. 
 
 
+# Deprecation 
+
+Development of this software is deprecated. Please consider exporting your database into CSV format suitable for importing to various workflow systems such as Jira. 
+
 # Installation 
 
 In order to install Mako run the following:
